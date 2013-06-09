@@ -50,6 +50,26 @@ defmodule Mock do
   end
 
   @doc """
+  Shortcut to avoid multiple blocks when a test requires a single
+  mock.
+
+  ## Example
+      test_with_mock "test_name", HTTPotion,
+        [get: fn(_url) -> "<html></html>"] do
+        HTTPotion.get("http://example.com")
+        assert called HTTPotion.get("http://example.com")
+      end
+  """
+  defmacro test_with_mock(test_name, mock_module, mocks, test_block) do
+    quote do
+      test unquote(test_name) do
+        unquote(__MODULE__).with_mock(
+            unquote(mock_module), unquote(mocks), unquote(test_block))
+      end
+    end
+  end
+
+  @doc """
     Use inside a `with_mock` block to determine whether
     a mocked function was called as expected.
 
