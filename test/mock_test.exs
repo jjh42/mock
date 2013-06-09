@@ -23,6 +23,14 @@ defmodule MockTest do
     end
   end
 
+  test_with_mock "test with mock",
+    Dummy,
+    [get: fn(_x) -> :ok end] do
+    assert Dummy.get 3
+    assert called Dummy.get(3)
+    refute called Dummy.get(4)
+  end
+
   test "restore after exception" do
     assert String.downcase("A") == "a"
     try do
