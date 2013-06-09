@@ -1,17 +1,39 @@
 defmodule Mock do
   @moduledoc """
-    Mock modules for testing.
-    """
+  Mock modules for testing purposes. Usually inside a unit test.
+
+  ## Example
+
+      defmodule MyTest do
+        use ExUnit.Case
+        import Mock
+
+        test "get" do
+          with_mock HTTPotion,
+              [get: fn("http://example.com", _headers) ->
+                      HTTPotion.Response.new(status_code: 200,
+                          body: "hello") end] do
+            # Code which calls HTTPotion.get
+            # Check that the call was made as we expected
+            assert called HTTPotion.get("http://example.com", :_)
+          end
+        end
+      end
+  """
 
   @doc """
-       Mock up a module for the duration of a test.
+  Mock up `mock_module` with functions specified as a keyword
+  list of function_name:implementation `mocks` for the duration
+  of `test`.
 
-       with_mock(HTTPPotion, [get: fn("http://example.com") ->
-                "<html></html>" end] do
-              # Tests that make the expected call
-              assert called HTTPotion.get("http://example.com")
-            end
-       """
+  ## Example
+
+      with_mock(HTTPPotion, [get: fn("http://example.com") ->
+           "<html></html>" end] do
+         # Tests that make the expected call
+         assert called HTTPotion.get("http://example.com")
+      end
+  """
   defmacro with_mock(mock_module, mocks, test) do
     quote do
       :meck.new(unquote(mock_module))
@@ -28,10 +50,12 @@ defmodule Mock do
   end
 
   @doc """
-    Use inside a with_mock block to determine whether
-    a function was called.
+    Use inside a `with_mock` block to determine whether
+    a mocked function was called as expected.
 
-    assert called(HTTPotion.get("http://example.com")
+    ## Example
+
+        assert called HTTPotion.get("http://example.com")
     """ 
   defmacro called({ {:., _, [ module , f ]} , _, args }) do    
     quote do
