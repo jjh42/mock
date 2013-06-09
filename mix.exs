@@ -1,8 +1,8 @@
-defmodule Mockex.Mixfile do
+defmodule Mock.Mixfile do
   use Mix.Project
 
   def project do
-    [ app: :mockex,
+    [ app: :mock,
       version: "0.0.1",
       deps: deps ]
   end

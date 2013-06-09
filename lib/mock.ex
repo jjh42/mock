@@ -1,4 +1,4 @@
-defmodule MockEx do
+defmodule Mock do
   @moduledoc """
     Mock modules for testing.
     """
@@ -15,7 +15,7 @@ defmodule MockEx do
   defmacro with_mock(mock_module, mocks, test) do
     quote do
       :meck.new(unquote(mock_module))
-      MockEx._install_mock(unquote(mock_module), unquote(mocks))
+      unquote(__MODULE__)._install_mock(unquote(mock_module), unquote(mocks))
       try do
         # Do all the tests inside so we can kill the mock
         # if any exception occurs.
@@ -43,6 +43,6 @@ defmodule MockEx do
   def _install_mock(_, []), do: :ok
   def _install_mock(mock_module, [ {fn_name, value} | tail ]) do
     :meck.expect(mock_module, fn_name, value)
-    MockEx._install_mock(mock_module, tail)
+    _install_mock(mock_module, tail)
   end
 end

@@ -1,8 +1,8 @@
 Code.require_file "test_helper.exs", __DIR__
 
-defmodule MockexTest do
+defmodule MockTest do
   use ExUnit.Case
-  import MockEx
+  import Mock
 
   test "simple mock" do
     with_mock Dummy,
