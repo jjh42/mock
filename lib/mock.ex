@@ -54,6 +54,7 @@ defmodule Mock do
   mock.
 
   ## Example
+
       test_with_mock "test_name", HTTPotion,
         [get: fn(_url) -> "<html></html>"] do
         HTTPotion.get("http://example.com")
