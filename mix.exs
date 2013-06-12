@@ -6,7 +6,7 @@ defmodule Mock.Mixfile do
       name: "Mock",
       source_url: "https://github.com/jjh42/mock",
       homepage_url: "http://jjh42.github.io/mock",
-      version: "0.0.2",
+      version: "0.0.3",
       env: [
           dev: [deps: deps ++ dev_deps],
           test: [deps: deps] ,
