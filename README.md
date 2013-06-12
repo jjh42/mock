@@ -35,6 +35,19 @@ and we can check that the call was made as we expected using `called` and
 providing the example of the call we expected (the second argument `:_` has a 
 special meaning of matching anything).
 
+You can also pass the option `:passthrough` to retain the origina module functionality. For example
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case
+  import Mock
+
+  test_with_mock "test_name", IO, [:passthrough], [] do
+	IO.puts "hello"
+    assert called IO.puts "hello"
+  end
+end
+````
+
 Currently, mocking modules cannot be done asynchronously, so make sure that you
 are not using `async: true` in any module where you are testing.
 

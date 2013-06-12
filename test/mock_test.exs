@@ -23,12 +23,21 @@ defmodule MockTest do
     end
   end
 
-  test_with_mock "test with mock",
+  test_with_mock "test_with_mock",
     Dummy,
     [get: fn(_x) -> :ok end] do
     assert Dummy.get 3
     assert called Dummy.get(3)
     refute called Dummy.get(4)
+  end
+
+  test_with_mock "passthrough", HashDict, [:passthrough],
+    [] do
+    hd = HashDict.new([{:a, 1}])
+    assert HashDict.get(hd, :a) == 1
+    assert called HashDict.new([{:a, 1}])
+    assert called HashDict.get(hd, :a)
+    refute called HashDict.get(hd, :b)
   end
 
   test "restore after exception" do
