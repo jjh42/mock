@@ -26,6 +26,9 @@ defmodule Mock do
   list of function_name:implementation `mocks` for the duration
   of `test`.
 
+  `opts` List of optional arguments passed to meck. `:passthrough` will
+   passthrough arguments to the original module.
+
   ## Example
 
       with_mock(HTTPPotion, [get: fn("http://example.com") ->
@@ -34,9 +37,9 @@ defmodule Mock do
          assert called HTTPotion.get("http://example.com")
       end
   """
-  defmacro with_mock(mock_module, options // [], mocks, test) do
+  defmacro with_mock(mock_module, opts // [], mocks, test) do
     quote do
-      :meck.new(unquote(mock_module), unquote(options))
+      :meck.new(unquote(mock_module), unquote(opts))
       unquote(__MODULE__)._install_mock(unquote(mock_module), unquote(mocks))
       try do
         # Do all the tests inside so we can kill the mock
@@ -53,6 +56,8 @@ defmodule Mock do
   Shortcut to avoid multiple blocks when a test requires a single
   mock.
 
+  For full description see `with_mock`.
+
   ## Example
 
       test_with_mock "test_name", HTTPotion,
@@ -61,11 +66,11 @@ defmodule Mock do
         assert called HTTPotion.get("http://example.com")
       end
   """
-  defmacro test_with_mock(test_name, mock_module, options // [], mocks, test_block) do
+  defmacro test_with_mock(test_name, mock_module, opts // [], mocks, test_block) do
     quote do
       test unquote(test_name) do
         unquote(__MODULE__).with_mock(
-            unquote(mock_module), unquote(options), unquote(mocks), unquote(test_block))
+            unquote(mock_module), unquote(opts), unquote(mocks), unquote(test_block))
       end
     end
   end
