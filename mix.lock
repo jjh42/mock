@@ -1,3 +1,3 @@
-[ "docs_ghpages": {:git,"https://github.com/jjh42/docs_ghpages.git","fb0681291259aa366ed1b00d481655ce1b7501c5",[]},
-  "ex_doc": {:git,"https://github.com/elixir-lang/ex_doc.git","e306f13f5ddaaff7a705907657e155e891088d1b",[]},
+[ "docs_ghpages": {:git,"https://github.com/jjh42/docs_ghpages.git","8519cd068c0cf6275d25d9d0d785940ce41daea4",[]},
+  "ex_doc": {:git,"https://github.com/elixir-lang/ex_doc.git","02b2a1d814ad5f574d99d969ea4e1021c0eb2e45",[]},
   "meck": {:git,"https://github.com/eproxus/meck.git","161e240166a0d20e9ffa2be5d0bfa6a981f12aef",[]} ]
