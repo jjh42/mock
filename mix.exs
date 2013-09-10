@@ -16,7 +16,7 @@ defmodule Mock.Mixfile do
   # Returns the list of dependencies in the format:
   # { :foobar, "0.1", git: "https://github.com/elixir-lang/foobar.git" }
   defp deps do
-    [ {:meck,"0.7.2", [github: "eproxus/meck"]}]
+    [ {:meck,"0.7.2", [github: "eproxus/meck", tag: "0.7.2"]}]
   end
 
   # Dependencies only needed during development.
