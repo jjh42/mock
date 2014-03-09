@@ -21,7 +21,7 @@ defmodule MyTest do
   import Mock
 
   test_with_mock "test_name", HTTPotion,
-    [get: fn(_url) -> "<html></html>"] do
+    [get: fn(_url) -> "<html></html>" end] do
     HTTPotion.get("http://example.com")
     assert called HTTPotion.get("http://example.com")
   end
