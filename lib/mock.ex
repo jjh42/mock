@@ -66,7 +66,7 @@ defmodule Mock do
         assert called HTTPotion.get("http://example.com")
       end
   """
-  defmacro test_with_mock(test_name, mock_module, opts // [], mocks, test_block) do
+  defmacro test_with_mock(test_name, mock_module, opts \\ [], mocks, test_block) do
     quote do
       test unquote(test_name) do
         unquote(__MODULE__).with_mock(
