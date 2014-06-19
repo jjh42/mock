@@ -17,7 +17,8 @@ webpage you could do something like this.
 
 ```` elixir
 defmodule MyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
+
   import Mock
 
   test_with_mock "test_name", HTTPotion,
@@ -38,7 +39,7 @@ special meaning of matching anything).
 You can also pass the option `:passthrough` to retain the origina module functionality. For example
 ```` elixir
 defmodule MyTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   import Mock
 
   test_with_mock "test_name", IO, [:passthrough], [] do
@@ -59,6 +60,9 @@ best to write as much as possible of your code as pure functions which don't
 require mocking to test. However, when interacting with the real world (or web services,
 users etc.) sometimes side-effects are necessary. In these cases, mocking is one
 useful approach for testing this functionality.
+
+Also, note that Mock has a global effect so if you are using Mocks in multiple tests set
+`async: false` so that only one test runs at a time.
 
 ## Help
 
