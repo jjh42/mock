@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jjh42/meckex.png?branch=master)](https://travis-ci.org/jjh42/meckex)
+[![Build Status](https://travis-ci.org/jjh42/mock.png?branch=master)](https://travis-ci.org/jjh42/mock)
 
 # Mock
 A mocking libary for the Elixir language.
