@@ -10,10 +10,32 @@ the functionality in a convenient manner for integrating in Elixir tests.
 See the full [reference documentation](http://jjh42.github.io/mock).
 
 ## Example
+The Mock library provides the `with_mock` macro for running tests with
+mocks.
 
 For a simple example, if you wanted to test some code which calls
 `HTTPotion.get` to get a webpage but without actually fetching the
 webpage you could do something like this.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      # Tests that make the expected call
+      assert called HTTPotion.get("http://example.com")
+    end
+  end
+end
+````
+
+An additional convenience macro `test_with_mock` is supplied which
+internally delegates to `with_macro`. Allowing the above test to be
+written as follows:
 
 ```` elixir
 defmodule MyTest do
@@ -29,11 +51,34 @@ defmodule MyTest do
 end
 ````
 
+The `test_with_mock` macro can also be passed a context argument
+allowing the sharing of information between callbacks and the test
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  setup do
+    doc = "<html></html>"
+    {:ok, doc: doc}
+  end
+
+  test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
+    [get: fn(_url) -> doc end] do
+
+    HTTPotion.get("http://example.com")
+    assert called HTTPotion.get("http://example.com")
+  end
+end
+````
+
 The `with_mock` creates a mock module. The keyword list provides a set
 of mock implementation for functions we want to provide in the mock (in
 this case just `get`). Inside `with_mock` we exercise the test code
 and we can check that the call was made as we expected using `called` and
-providing the example of the call we expected (the second argument `:_` has a 
+providing the example of the call we expected (the second argument `:_` has a
 special meaning of matching anything).
 
 You can also pass the option `:passthrough` to retain the origina module functionality. For example

@@ -5,6 +5,11 @@ defmodule MockTest do
   use ExUnit.Case, async: false
   import Mock
 
+  setup_all do
+    foo = "bar"
+    {:ok, foo: foo}
+  end
+
   test "simple mock" do
     with_mock String,
         [reverse: fn(x) -> 2*x end] do
@@ -28,6 +33,14 @@ defmodule MockTest do
     String,
     [reverse: fn(_x) -> :ok end] do
     assert String.reverse 3
+    assert called String.reverse(3)
+    refute called String.reverse(4)
+  end
+
+  test_with_mock "test_with_mock with context", %{foo: foo}, String, [],
+    [reverse: fn(_x) -> :ok end] do
+    assert String.reverse 3
+    assert foo == "bar"
     assert called String.reverse(3)
     refute called String.reverse(4)
   end

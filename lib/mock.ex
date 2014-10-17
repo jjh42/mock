@@ -76,6 +76,35 @@ defmodule Mock do
   end
 
   @doc """
+  Shortcut to avoid multiple blocks when a test requires a single
+  mock. Accepts a context argument enabling information to be shared
+  between callbacks and the test.
+
+  For full description see `with_mock`.
+
+  ## Example
+      setup do
+        doc = "<html></html>"
+        {:ok, doc: doc}
+      end
+
+      test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
+        [get: fn(_url) -> doc end] do
+
+        HTTPotion.get("http://example.com")
+        assert called HTTPotion.get("http://example.com")
+      end
+  """
+  defmacro test_with_mock(test_name, context, mock_module, opts, mocks, test_block) do
+    quote do
+      test unquote(test_name), unquote(context) do
+        unquote(__MODULE__).with_mock(
+            unquote(mock_module), unquote(opts), unquote(mocks), unquote(test_block))
+      end
+    end
+  end
+
+  @doc """
     Use inside a `with_mock` block to determine whether
     a mocked function was called as expected.
 
