@@ -51,6 +51,29 @@ defmodule MyTest do
 end
 ````
 
+The `test_with_mock` macro can also be passed a context argument
+allowing the sharing of information between callbacks and the test
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  setup do
+    doc = "<html></html>"
+    {:ok, doc: doc}
+  end
+
+  test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
+    [get: fn(_url) -> doc end] do
+
+    HTTPotion.get("http://example.com")
+    assert called HTTPotion.get("http://example.com")
+  end
+end
+````
+
 The `with_mock` creates a mock module. The keyword list provides a set
 of mock implementation for functions we want to provide in the mock (in
 this case just `get`). Inside `with_mock` we exercise the test code
