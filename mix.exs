@@ -4,7 +4,7 @@ defmodule Mock.Mixfile do
   def project do
     [ app: :mock,
       name: "Mock",
-      version: "0.0.4",
+      version: "0.1.0",
       elixir: "~> 1.0",
       description: description,
       package: package,
@@ -34,7 +34,6 @@ defmodule Mock.Mixfile do
       files: ["lib", "mix.exs", "README.md", "LICENSE.md"],
       contributors: [
         "Dave Thomas",
-        "Jonathan Hunt",
         "Jonathan J Hunt",
         "Joseph Wilk",
         "Josh Adams",
@@ -46,7 +45,7 @@ defmodule Mock.Mixfile do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/jjh42/mock",
-        "Docs"   => "http://jjh42.github.io/mock"
+        "Docs"   => "https://jjh42.github.io/mock"
       }
     ]
   end
