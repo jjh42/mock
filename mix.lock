@@ -1,3 +1,5 @@
 %{"docs_ghpages": {:git, "git://github.com/jjh42/docs_ghpages.git", "9150646215e8435cefbb8456e15a1691fd0b1489", []},
-  "ex_doc": {:git, "git://github.com/elixir-lang/ex_doc.git", "68c2c1b1856e2d2a91d11c81b36ecd95aa309064", []},
+  "ex_doc": {:git, "git://github.com/elixir-lang/ex_doc.git", "2264c7609aeec1a09d014764fae162c1c8036a28", []},
+  "hoedown": {:git, "git://github.com/hoedown/hoedown.git", "3afc3ec505dd7dd902086f8c158290962e705663", []},
+  "markdown": {:git, "git://github.com/devinus/markdown.git", "a428908a6dd88f351775d1d3da530a1a2aa0d6cb", []},
   "meck": {:hex, :meck, "0.8.2"}}
