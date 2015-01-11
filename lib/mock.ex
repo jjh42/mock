@@ -37,15 +37,16 @@ defmodule Mock do
          assert called HTTPotion.get("http://example.com")
       end
   """
-  defmacro with_mock(mock_module, opts \\ [], mocks, test) do
+  defmacro with_mock(mock_module, opts \\ [], mocks, do: test) do
     quote do
       :meck.new(unquote(mock_module), unquote(opts))
       unquote(__MODULE__)._install_mock(unquote(mock_module), unquote(mocks))
       try do
         # Do all the tests inside so we can kill the mock
         # if any exception occurs.
-        unquote(test)
+        result = unquote(test)
         assert :meck.validate(unquote(mock_module)) == true
+        result
       after
         :meck.unload(unquote(mock_module))
       end

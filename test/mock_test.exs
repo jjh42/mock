@@ -17,6 +17,15 @@ defmodule MockTest do
     end
   end
 
+  test "mock returns the result" do
+    result = with_mock String,
+    [reverse: fn(x) -> 2*x end] do
+      assert String.reverse(3) == 6
+      String.reverse(3)
+    end
+    assert result == 6
+  end
+
   test "called" do
     with_mock String,
        [reverse: fn(x) -> 2*x end,
