@@ -9,6 +9,18 @@ the functionality in a convenient manner for integrating in Elixir tests.
 
 See the full [reference documentation](http://jjh42.github.io/mock).
 
+## Installation
+
+First, add mock to your `mix.exs` dependencies:
+
+```elixir
+def deps do
+  [{:mock, "~> 0.1.1", only: :test}]
+end
+```
+
+and run `$ mix deps.get`.
+
 ## Example
 The Mock library provides the `with_mock` macro for running tests with
 mocks.
