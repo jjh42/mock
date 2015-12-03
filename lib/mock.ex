@@ -31,7 +31,7 @@ defmodule Mock do
 
   ## Example
 
-      with_mock(HTTPPotion, [get: fn("http://example.com") ->
+      with_mock(HTTPotion, [get: fn("http://example.com") ->
            "<html></html>" end] do
          # Tests that make the expected call
          assert called HTTPotion.get("http://example.com")

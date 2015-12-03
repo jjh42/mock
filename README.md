@@ -92,7 +92,7 @@ and we can check that the call was made as we expected using `called` and
 providing the example of the call we expected (the second argument `:_` has a
 special meaning of matching anything).
 
-You can also pass the option `:passthrough` to retain the origina module
+You can also pass the option `:passthrough` to retain the original module
 functionality. For example
 ```` elixir
 defmodule MyTest do
