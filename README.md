@@ -77,10 +77,10 @@ defmodule MyTest do
   end
 
   test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
-    [get: fn(_url) -> doc end] do
+    [get: fn(_url, _headers) -> doc end] do
 
-    HTTPotion.get("http://example.com")
-    assert called HTTPotion.get("http://example.com")
+    HTTPotion.get("http://example.com", [foo: :bar])
+    assert called HTTPotion.get("http://example.com", :_)
   end
 end
 ````
