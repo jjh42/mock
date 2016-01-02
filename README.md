@@ -45,7 +45,7 @@ end
 ````
 
 An additional convenience macro `test_with_mock` is supplied which
-internally delegates to `with_macro`. Allowing the above test to be
+internally delegates to `with_mock`. Allowing the above test to be
 written as follows:
 
 ```` elixir
