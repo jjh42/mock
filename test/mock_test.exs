@@ -29,7 +29,7 @@ defmodule MockTest do
   test "called" do
     with_mock String,
        [reverse: fn(x) -> 2*x end,
-        length: fn(x) -> :ok end] do
+        length: fn(_x) -> :ok end] do
       String.reverse 3
       assert :meck.called String, :reverse, [3]
       assert called String.reverse(3)
