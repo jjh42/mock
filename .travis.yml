@@ -5,4 +5,4 @@ elixir:
 env:
   - MIX_ENV=test 
 otp_release:
-  - 17.4
+  - 18.2
