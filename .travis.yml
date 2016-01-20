@@ -3,6 +3,8 @@ elixir:
   - 1.0.0
   - 1.2.0
 env:
-  - MIX_ENV=test 
+  - MIX_ENV=test
 otp_release:
   - 18.2
+script:
+  - "mix do deps.get, compile, coveralls.travis"
