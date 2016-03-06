@@ -46,6 +46,7 @@ defmodule Mock.Mixfile do
         "Mikhail S. Pobolovets",
         "parroty",
       ],
+      maintainers: ["Jonathan J Hunt (j@me.net.nz)"],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/jjh42/mock",
