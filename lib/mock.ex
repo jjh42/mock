@@ -2,6 +2,8 @@ defmodule Mock do
   @moduledoc """
   Mock modules for testing purposes. Usually inside a unit test.
 
+  Please see the README file on github for a tutorial
+
   ## Example
 
       defmodule MyTest do

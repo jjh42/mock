@@ -4,11 +4,12 @@ defmodule Mock.Mixfile do
   def project do
     [ app: :mock,
       name: "Mock",
-      version: "0.1.2",
+      version: "0.1.3",
       elixir: "~> 1.0",
       description: description,
       package: package,
       test_coverage: [tool: ExCoveralls],
+      docs: [source_ref: "v#{@version}", main: "Mock"],
       preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test],
       deps: deps ]
   end
