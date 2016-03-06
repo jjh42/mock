@@ -1,5 +1,5 @@
 %{"certifi": {:hex, :certifi, "0.4.0"},
-  "docs_ghpages": {:git, "https://github.com/jjh42/docs_ghpages.git", "9150646215e8435cefbb8456e15a1691fd0b1489", []},
+  "docs_ghpages": {:git, "https://github.com/jjh42/docs_ghpages.git", "48026d548475a5b03e4a39282d0cbd9d9c4973d6", []},
   "ex_doc": {:git, "https://github.com/elixir-lang/ex_doc.git", "faf5b85c7aabf5abe7f408c9bf51a6462ea28910", []},
   "excoveralls": {:hex, :excoveralls, "0.5.1"},
   "exjsx": {:hex, :exjsx, "3.2.0"},
