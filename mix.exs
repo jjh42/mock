@@ -8,6 +8,8 @@ defmodule Mock.Mixfile do
       elixir: "~> 1.0",
       description: description,
       package: package,
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test],
       deps: deps ]
   end
 
@@ -15,7 +17,8 @@ defmodule Mock.Mixfile do
     [
       {:meck, "~> 0.8.2"},
       {:docs_ghpages, github: "jjh42/docs_ghpages", only: :dev},
-			{:markdown, github: "devinus/markdown", only: :dev}
+      {:markdown, github: "devinus/markdown", only: :dev},
+      {:excoveralls, "~> 0.4", only: :test}
     ]
   end
 
