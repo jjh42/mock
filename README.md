@@ -109,6 +109,9 @@ end
 Currently, mocking modules cannot be done asynchronously, so make sure that you
 are not using `async: true` in any module where you are testing.
 
+Also, because of the way mock overrides the module, it must be defined in a
+seperate file from the test file.
+
 ## Tips
 The use of mocking can be somewhat controversial. I personally think that it
 works well for certain types of tests. Certainly, you should not overuse it. It
