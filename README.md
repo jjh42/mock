@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/jjh42/mock.svg?branch=master)](https://travis-ci.org/jjh42/mock)
-[![Coverage Status](http://img.shields.io/coveralls/jjh42/mock.svg)](https://coveralls.io/r/jjh42/mock)
+[![Coverage Status](https://coveralls.io/repos/github/jjh42/mock/badge.svg?branch=master)](https://coveralls.io/github/jjh42/mock?branch=master)
 
 # Mock
 A mocking libary for the Elixir language.
