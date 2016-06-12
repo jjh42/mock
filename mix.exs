@@ -1,10 +1,12 @@
 defmodule Mock.Mixfile do
   use Mix.Project
 
+  @version "0.1.4"
+
   def project do
     [ app: :mock,
       name: "Mock",
-      version: "0.1.3",
+      version: @version,
       elixir: "~> 1.0",
       description: description,
       package: package,
