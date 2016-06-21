@@ -17,6 +17,22 @@ defmodule MockTest do
     end
   end
 
+  test "multiple mocks" do
+    with_mocks([
+      {HashDict,
+       [],
+       [get: fn(%{}, "http://example.com") -> "<html></html>" end]},
+      {String,
+       [],
+       [reverse: fn(x) -> 2*x end,
+        length: fn(_x) -> :ok end]}
+    ]) do
+      assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+      assert String.reverse(3) == 6
+      assert String.length(3) == :ok
+    end
+  end
+
   test "mock returns the result" do
     result = with_mock String,
     [reverse: fn(x) -> 2*x end] do
