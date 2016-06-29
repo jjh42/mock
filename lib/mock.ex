@@ -41,16 +41,39 @@ defmodule Mock do
   """
   defmacro with_mock(mock_module, opts \\ [], mocks, do: test) do
     quote do
-      :meck.new(unquote(mock_module), unquote(opts))
-      unquote(__MODULE__)._install_mock(unquote(mock_module), unquote(mocks))
+      unquote(__MODULE__).with_mocks(
+       [{unquote(mock_module), unquote(opts), unquote(mocks)}], do: unquote(test))
+    end
+  end
+
+  @doc """
+  Mock up multiple modules for the duration of `test`.
+
+  ## Example
+  with_mocks([{HTTPotion, opts, [{get: fn("http://example.com") -> "<html></html>" end}]}]) do
+    # Tests that make the expected call
+    assert called HTTPotion.get("http://example.com")
+  end
+  """
+  defmacro with_mocks(mocks, do: test) do
+    quote do
+      mock_modules =
+      unquote(mocks)
+      |> Enum.reduce([], fn({m, opts, mock_fns}, ms) ->
+        unless m in ms do
+          :meck.new(m, opts)
+        end
+
+        unquote(__MODULE__)._install_mock(m, mock_fns)
+        assert :meck.validate(m) == true
+
+        [ m | ms] |> Enum.uniq
+      end)
+
       try do
-        # Do all the tests inside so we can kill the mock
-        # if any exception occurs.
-        result = unquote(test)
-        assert :meck.validate(unquote(mock_module)) == true
-        result
+        unquote(test)
       after
-        :meck.unload(unquote(mock_module))
+        for m <- mock_modules, do: :meck.unload(m)
       end
     end
   end

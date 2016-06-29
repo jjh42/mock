@@ -45,6 +45,36 @@ defmodule MyTest do
 end
 ````
 
+And you can mock up multiple modules with `with_mocks`.
+
+`opts` List of optional arguments passed to meck. `:passthrough` will
+passthrough arguments to the original module. Pass `[]` as `opts` if you don't
+need this.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "multiple mocks" do
+    with_mocks([
+      {HashDict,
+       [],
+       [get: fn(%{}, "http://example.com") -> "<html></html>" end]},
+      {String,
+       [],
+       [reverse: fn(x) -> 2*x end,
+        length: fn(_x) -> :ok end]}
+    ]) do
+      assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+      assert String.reverse(3) == 6
+      assert String.length(3) == :ok
+    end
+  end
+end
+````
+
 An additional convenience macro `test_with_mock` is supplied which
 internally delegates to `with_mock`. Allowing the above test to be
 written as follows:
