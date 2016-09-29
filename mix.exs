@@ -8,6 +8,7 @@ defmodule Mock.Mixfile do
       name: "Mock",
       version: @version,
       elixir: "~> 1.0",
+      elixirc_paths: elixirc_paths(Mix.env),
       description: description,
       package: package,
       test_coverage: [tool: ExCoveralls],
@@ -58,4 +59,7 @@ defmodule Mock.Mixfile do
       }
     ]
   end
+
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_),     do: ["lib"]
 end

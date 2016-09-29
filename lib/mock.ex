@@ -65,7 +65,7 @@ defmodule Mock do
         end
 
         unquote(__MODULE__)._install_mock(m, mock_fns)
-        assert :meck.validate(m) == true
+        true = :meck.validate(m)
 
         [ m | ms] |> Enum.uniq
       end)

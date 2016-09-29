@@ -4,6 +4,7 @@ Code.require_file "test_helper.exs", __DIR__
 defmodule MockTest do
   use ExUnit.Case, async: false
   import Mock
+  alias MockTest.Helper
 
   setup_all do
     foo = "bar"
@@ -40,6 +41,10 @@ defmodule MockTest do
       String.reverse(3)
     end
     assert result == 6
+  end
+
+  test "mock in an external module" do
+    assert Helper.foo == :bar
   end
 
   test "called" do
