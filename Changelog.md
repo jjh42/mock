@@ -1,3 +1,6 @@
+# 0.2.1
+* Compatibility fixes for Elixir 1.4 (@parroty)
+
 # 0.2.0
 
 * enhancements
