@@ -8,12 +8,12 @@ defmodule Mock.Mixfile do
       name: "Mock",
       version: @version,
       elixir: "~> 1.0",
-      description: description,
-      package: package,
+      description: description(),
+      package: package(),
       test_coverage: [tool: ExCoveralls],
       docs: [source_ref: "v#{@version}", main: "Mock"],
       preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test],
-      deps: deps ]
+      deps: deps() ]
   end
 
   defp deps do
