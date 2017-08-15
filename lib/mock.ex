@@ -57,18 +57,7 @@ defmodule Mock do
   """
   defmacro with_mocks(mocks, do: test) do
     quote do
-      mock_modules =
-      unquote(mocks)
-      |> Enum.reduce([], fn({m, opts, mock_fns}, ms) ->
-        unless m in ms do
-          :meck.new(m, opts)
-        end
-
-        unquote(__MODULE__)._install_mock(m, mock_fns)
-        assert :meck.validate(m) == true
-
-        [ m | ms] |> Enum.uniq
-      end)
+      mock_modules = mock_modules(unquote(mocks))
 
       try do
         unquote(test)
@@ -141,6 +130,92 @@ defmodule Mock do
   defmacro called({ {:., _, [ module , f ]} , _, args }) do
     quote do
       :meck.called unquote(module), unquote(f), unquote(args)
+    end
+  end
+
+  @doc """
+  Mocks up multiple modules prior to the execution of each test in a case and
+  execute the callback specified.
+
+  For full description of mocking, see `with_mocks`.
+
+  For a full description of ExUnit setup, see
+  https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html
+
+  ## Example
+      setup_with_mocks([
+        {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+      ]) do
+        foo = "bar"
+        {:ok, foo: foo}
+      end
+
+      test "setup_all_with_mocks base case" do
+        assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+      end
+  """
+  defmacro setup_with_mocks(mocks, do: setup_block) do
+    quote do
+      setup do
+        mock_modules(unquote(mocks))
+
+        # The mocks are linked to the process that setup all the tests and are
+        # automatically unloaded when that process shuts down
+
+        unquote(setup_block)
+      end
+    end
+  end
+
+  @doc """
+  Mocks up multiple modules prior to the execution of each test in a case and
+  execute the callback specified with a context specified
+
+  See `setup_with_mocks` for more details
+
+  ## Example
+      setup_with_mocks([
+        {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+      ], context) do
+        {:ok, test_string: Atom.to_string(context.test)}
+      end
+
+      test "setup_all_with_mocks with context", %{test_string: test_string} do
+        assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+        assert test_string == "test setup_all_with_mocks with context"
+      end
+  """
+  defmacro setup_with_mocks(mocks, context, do: setup_block) do
+    quote do
+      setup unquote(context) do
+        mock_modules(unquote(mocks))
+        unquote(setup_block)
+      end
+    end
+  end
+
+  # Helper macro to mock modules. Intended to be called only within this module
+  # but not defined as `defmacrop` due to the scope within which it's used.
+  defmacro mock_modules(mocks) do
+    quote do
+      Enum.reduce(unquote(mocks), [], fn({m, opts, mock_fns}, ms) ->
+        unless m in ms do
+          # :meck.validate will throw an error if trying to validate
+          # a module that was not mocked
+          try do
+            if :meck.validate(m), do: :meck.unload(m)
+          rescue
+            e in ErlangError -> :ok
+          end
+
+          :meck.new(m, opts)
+        end
+
+        unquote(__MODULE__)._install_mock(m, mock_fns)
+        assert :meck.validate(m) == true
+
+        [ m | ms] |> Enum.uniq
+      end)
     end
   end
 

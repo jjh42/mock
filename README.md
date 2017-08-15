@@ -137,6 +137,34 @@ defmodule MyTest do
 end
 ````
 
+The `setup_with_mocks` mocks up multiple modules prior to every single test
+along with calling the provided setup block. It is simply an integration of the
+`with_mocks` macro available in this module along with the [`setup`](https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html#setup/1)
+macro defined in elixir's `ExUnit`.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+  import Mock
+
+  setup_with_mocks([
+    {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+  ]) do
+    foo = "bar"
+    {:ok, foo: foo}
+  end
+
+  test "setup_with_mocks" do
+    assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+  end
+end
+````
+
+The behaviour of a mocked module within the setup call can be overriden using any
+of the methods above in the scope of a specific test. Providing this functionality
+by `setup_all` is more difficult, and as such, `setup_all_with_mocks` is not currently
+supported.
+
 Currently, mocking modules cannot be done asynchronously, so make sure that you
 are not using `async: true` in any module where you are testing.
 
