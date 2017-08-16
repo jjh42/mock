@@ -40,6 +40,7 @@ defmodule Mock.Mixfile do
     [
       files: ["lib", "mix.exs", "README.md", "LICENSE.md"],
       contributors: [
+        "Daniel Olshansky",
         "Dave Thomas",
         "Jonathan J Hunt",
         "Joseph Wilk",
@@ -50,7 +51,10 @@ defmodule Mock.Mixfile do
         "parroty",
         "xieyunzi",
       ],
-      maintainers: ["Jonathan J Hunt (j@me.net.nz)"],
+      maintainers: [
+        "Daniel Olshansky (olshansky.daniel@gmail.com)",
+        "Jonathan J Hunt (j@me.net.nz)"
+      ],
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/jjh42/mock",
