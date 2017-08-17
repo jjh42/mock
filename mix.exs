@@ -18,7 +18,7 @@ defmodule Mock.Mixfile do
 
   defp deps do
     [
-      {:meck, "~> 0.8.2"},
+      {:meck, "~> 0.8.7"},
       {:docs_ghpages, github: "jjh42/docs_ghpages", only: :dev},
       {:markdown, github: "devinus/markdown", only: :dev},
       {:excoveralls, "~> 0.4", only: :test}
