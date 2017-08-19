@@ -75,6 +75,28 @@ defmodule MyTest do
 end
 ````
 
+You can mock functions that return different values:
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+  
+  import Mock
+  
+  test "mock functions with multiple returns" do
+    with_mocks(HTTPotion, [
+      get: fn
+        "http://example.com" -> "<html>Hello from example.com</html>"
+        "http://example.org" -> "<html>example.org says hi</html>"
+      end
+    ]) do
+      assert HTTPotion.get("http://example.com") == "<html>Hello from example.com</html>"
+      assert HTTPotion.get("http://example.org") == "<html>example.org says hi</html>"
+    end
+  end
+end
+````
+
 An additional convenience macro `test_with_mock` is supplied which
 internally delegates to `with_mock`. Allowing the above test to be
 written as follows:
