@@ -75,14 +75,14 @@ defmodule MyTest do
 end
 ````
 
-You can mock functions that return different values:
+You can mock functions that return different values depending on the input:
 
 ```` elixir
 defmodule MyTest do
   use ExUnit.Case, async: false
-  
+
   import Mock
-  
+
   test "mock functions with multiple returns" do
     with_mocks(HTTPotion, [
       get: fn
