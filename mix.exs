@@ -1,7 +1,7 @@
 defmodule Mock.Mixfile do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.3.0"
 
   def project do
     [ app: :mock,
@@ -21,7 +21,7 @@ defmodule Mock.Mixfile do
       {:meck, "~> 0.8.7"},
       {:docs_ghpages, github: "jjh42/docs_ghpages", only: :dev},
       {:markdown, github: "devinus/markdown", only: :dev},
-      {:excoveralls, "~> 0.4", only: :test}
+      {:excoveralls, "~> 0.7.2", only: :test}
     ]
   end
 
