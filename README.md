@@ -59,7 +59,7 @@ defmodule MyTest do
 
   test "multiple mocks" do
     with_mocks([
-      {HashDict,
+      {Map,
        [],
        [get: fn(%{}, "http://example.com") -> "<html></html>" end]},
       {String,
@@ -67,7 +67,7 @@ defmodule MyTest do
        [reverse: fn(x) -> 2*x end,
         length: fn(_x) -> :ok end]}
     ]) do
-      assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+      assert Map.get(%{}, "http://example.com") == "<html></html>"
       assert String.reverse(3) == 6
       assert String.length(3) == :ok
     end
@@ -95,6 +95,27 @@ defmodule MyTest do
     end
   end
 end
+````
+
+You can mock functions in the same module with different arity.
+The same way you could mock function with optional args.
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "mock fuctions with different arity" do
+    with_mock String,
+      [slice: fn(string, range)      -> string end,
+       slice: fn(string, range, len) -> string end]
+    do
+      assert String.slice("test", 1..3) == "test"
+      assert String.slice("test", 1, 3) == "test"
+    end
+  end
+end
+
 ````
 
 An additional convenience macro `test_with_mock` is supplied which
@@ -170,14 +191,14 @@ defmodule MyTest do
   import Mock
 
   setup_with_mocks([
-    {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+    {Map, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
   ]) do
     foo = "bar"
     {:ok, foo: foo}
   end
 
   test "setup_with_mocks" do
-    assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+    assert Map.get(%{}, "http://example.com") == "<html></html>"
   end
 end
 ````

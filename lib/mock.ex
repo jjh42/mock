@@ -144,14 +144,14 @@ defmodule Mock do
 
   ## Example
       setup_with_mocks([
-        {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+        {Map, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
       ]) do
         foo = "bar"
         {:ok, foo: foo}
       end
 
       test "setup_all_with_mocks base case" do
-        assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+        assert Map.get(%{}, "http://example.com") == "<html></html>"
       end
   """
   defmacro setup_with_mocks(mocks, do: setup_block) do
@@ -175,13 +175,13 @@ defmodule Mock do
 
   ## Example
       setup_with_mocks([
-        {HashDict, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+        {Map, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
       ], context) do
         {:ok, test_string: Atom.to_string(context.test)}
       end
 
       test "setup_all_with_mocks with context", %{test_string: test_string} do
-        assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+        assert Map.get(%{}, "http://example.com") == "<html></html>"
         assert test_string == "test setup_all_with_mocks with context"
       end
   """

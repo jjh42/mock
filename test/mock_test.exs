@@ -19,7 +19,7 @@ defmodule MockTest do
 
   test "multiple mocks" do
     with_mocks([
-      {HashDict,
+      {Map,
        [],
        [get: fn(%{}, "http://example.com") -> "<html></html>" end]},
       {String,
@@ -27,9 +27,19 @@ defmodule MockTest do
        [reverse: fn(x) -> 2*x end,
         length: fn(_x) -> :ok end]}
     ]) do
-      assert HashDict.get(%{}, "http://example.com") == "<html></html>"
+      assert Map.get(%{}, "http://example.com") == "<html></html>"
       assert String.reverse(3) == 6
       assert String.length(3) == :ok
+    end
+  end
+
+  test "mock fuctions with different arity" do
+    with_mock String,
+      [slice: fn(string, _range)      -> string end,
+       slice: fn(string, _range, _len) -> string end]
+    do
+      assert String.slice("test", 1..3) == "test"
+      assert String.slice("test", 1, 3) == "test"
     end
   end
 
@@ -70,13 +80,13 @@ defmodule MockTest do
     refute called String.reverse(4)
   end
 
-  test_with_mock "passthrough", HashDict, [:passthrough],
+  test_with_mock "passthrough", Map, [:passthrough],
     [] do
-    hd = HashDict.put(HashDict.new(), :a, 1)
-    assert HashDict.get(hd, :a) == 1
-    assert called HashDict.new()
-    assert called HashDict.get(hd, :a)
-    refute called HashDict.get(hd, :b)
+    hd = Map.put(Map.new(), :a, 1)
+    assert Map.get(hd, :a) == 1
+    assert called Map.new()
+    assert called Map.get(hd, :a)
+    refute called Map.get(hd, :b)
   end
 
   test "restore after exception" do
