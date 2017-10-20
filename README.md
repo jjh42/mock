@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/jjh42/mock/badge.svg?branch=master)](https://coveralls.io/github/jjh42/mock?branch=master)
 
 # Mock
-A mocking libary for the Elixir language.
+A mocking library for the Elixir language.
 
 We use the Erlang [meck library](https://github.com/eproxus/meck) to provide
 module mocking functionality for Elixir. It uses macros in Elixir to expose the
@@ -105,7 +105,7 @@ defmodule MyTest do
 
   import Mock
 
-  test "mock fuctions with different arity" do
+  test "mock functions with different arity" do
     with_mock String,
       [slice: fn(string, range)      -> string end,
        slice: fn(string, range, len) -> string end]
@@ -203,7 +203,7 @@ defmodule MyTest do
 end
 ````
 
-The behaviour of a mocked module within the setup call can be overriden using any
+The behaviour of a mocked module within the setup call can be overridden using any
 of the methods above in the scope of a specific test. Providing this functionality
 by `setup_all` is more difficult, and as such, `setup_all_with_mocks` is not currently
 supported.
@@ -212,7 +212,7 @@ Currently, mocking modules cannot be done asynchronously, so make sure that you
 are not using `async: true` in any module where you are testing.
 
 Also, because of the way mock overrides the module, it must be defined in a
-seperate file from the test file.
+separate file from the test file.
 
 ## Tips
 The use of mocking can be somewhat controversial. I personally think that it
