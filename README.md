@@ -15,7 +15,7 @@ First, add mock to your `mix.exs` dependencies:
 
 ```elixir
 def deps do
-  [{:mock, "~> 0.2.0", only: :test}]
+  [{:mock, "~> 0.3.0", only: :test}]
 end
 ```
 
