@@ -1,0 +1,43 @@
+000000001CD1D3B0: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' '__info__' 1 
+000000001CD1D3D8: i_select_val_lins_xfI x(0) f(000000001CD1D3B0) 8 attributes compile functions md5 module deprecated macros -1 f(000000001CD1D528) f(000000001CD1D4D8) f(000000001CD1D478) f(000000001CD1D488) f(000000001CD1D578) f(000000001CD1D588) f(000000001CD1D588) f(000000001CD1D3B0) 
+000000001CD1D478: move_return_c [{indirect_value,0},{indirect_value_2,0},{value,0}] 
+000000001CD1D488: move_x1_c md5 
+000000001CD1D498: move_cr 'Elixir.MyApp.IndirectMod' r(0) 
+000000001CD1D4A8: allocate_tt 0 2 
+000000001CD1D4B8: call_bif_e erlang:get_module_info/2 
+000000001CD1D4C8: deallocate_return_Q 0 
+000000001CD1D4D8: move_x1_c compile 
+000000001CD1D4E8: move_cr 'Elixir.MyApp.IndirectMod' r(0) 
+000000001CD1D4F8: allocate_tt 0 2 
+000000001CD1D508: call_bif_e erlang:get_module_info/2 
+000000001CD1D518: deallocate_return_Q 0 
+000000001CD1D528: move_x1_c attributes 
+000000001CD1D538: move_cr 'Elixir.MyApp.IndirectMod' r(0) 
+000000001CD1D548: allocate_tt 0 2 
+000000001CD1D558: call_bif_e erlang:get_module_info/2 
+000000001CD1D568: deallocate_return_Q 0 
+000000001CD1D578: move_return_c 'Elixir.MyApp.IndirectMod' 
+000000001CD1D588: move_return_n [] 
+
+000000001CD1D590: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' indirect_value 0 
+000000001CD1D5B8: i_call_only_f 'Elixir.MyApp.IndirectMod':value/0 
+
+000000001CD1D5C8: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' indirect_value_2 0 
+000000001CD1D5F0: i_call_ext_only_e 'Elixir.MyApp.IndirectMod':value/0 
+
+000000001CD1D600: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' value 0 
+000000001CD1D628: move_return_c 1 
+
+000000001CD1D638: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' module_info 0 
+000000001CD1D660: move_cr 'Elixir.MyApp.IndirectMod' r(0) 
+000000001CD1D670: allocate_tt 0 1 
+000000001CD1D680: call_bif_e erlang:get_module_info/1 
+000000001CD1D690: deallocate_return_Q 0 
+
+000000001CD1D6A0: i_func_info_IaaI 0 'Elixir.MyApp.IndirectMod' module_info 1 
+000000001CD1D6C8: move_rx r(0) x(1) 
+000000001CD1D6D8: move_cr 'Elixir.MyApp.IndirectMod' r(0) 
+000000001CD1D6E8: allocate_tt 0 2 
+000000001CD1D6F8: call_bif_e erlang:get_module_info/2 
+000000001CD1D708: deallocate_return_Q 0 
+

@@ -89,6 +89,16 @@ defmodule MockTest do
     refute called Map.get(hd, :b)
   end
 
+  test "indirect mock" do
+    with_mocks([
+      { MyApp.IndirectMod, [:passthrough], [value: fn -> 2 end] },
+    ]) do
+      assert MyApp.IndirectMod.indirect_value_2() == 2
+      assert MyApp.IndirectMod.indirect_value() == 1
+      # assert String.length(3) == :ok
+    end
+  end
+
   test "restore after exception" do
     assert String.downcase("A") == "a"
     try do

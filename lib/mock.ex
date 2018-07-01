@@ -208,11 +208,21 @@ defmodule Mock do
             e in ErlangError -> :ok
           end
 
+          path_to_file = :code.which m
+          # IO.inspect {m, opts}
+          # IO.inspect {:beam_disasm.file(File.read!(path_to_file))}
+          # IO.inspect {:erts_debug.df m}
+          IO.inspect(:file.write_file("/tmp/disasm.asm", :io_lib.fwrite("~p.\n", [:beam_disasm.file(:code.which m)])))
+          IO.inspect(:compile.noenv_file("/tmp/disasm.asm", [:from_asm]))
+          # IO.inspect(:code.which MyApp.IndirectMod)
           :meck.new(m, opts)
         end
 
         unquote(__MODULE__)._install_mock(m, mock_fns)
         assert :meck.validate(m) == true
+
+        # IO.inspect({m, opts, mock_fns})
+        # IO.inspect {:beam_disasm.file(File.read!(path_to_file))}
 
         [ m | ms] |> Enum.uniq
       end)
@@ -226,3 +236,109 @@ defmodule Mock do
     _install_mock(mock_module, tail)
   end
 end
+
+# https://www.youtube.com/watch?v=5T5pYVw5WtY
+
+# {:function, :indirect_value, 0, 10,
+# [
+# {:line, 1},
+# {:label, 9},
+# {:func_info, {:atom, MyApp.IndirectMod}, {:atom, :indirect_value}, 0},
+# {:label, 10},
+# {:call_only, 0, {MyApp.IndirectMod, :value, 0}}
+# ]},
+# {:function, :indirect_value_2, 0, 12,
+# [
+# {:line, 2},
+# {:label, 11},
+# {:func_info, {:atom, MyApp.IndirectMod}, {:atom, :indirect_value_2}, 0},
+# {:label, 12},
+# {:line, 3},
+# {:call_ext_only, 0, {:extfunc, MyApp.IndirectMod, :value, 0}}
+# ]},
+# ```
+#
+# Note that specifying the module and omitting it compiles to different instructions on the beam.
+#
+# I know I’m probably entering the realm of things I shouldn’t touch, but let’s overlook that for a moment.
+#
+# What I want to achieve is to take the disassembled beam, replace `{:call_only, 0, {MyApp.IndirectMod, :value, 0}}` with `{:call_ext_only, 0, {:extfunc, MyApp.IndirectMod, :value, 0}}`, reassemble it, and write it back out to a file.
+#
+# The only missing peace is some sort of `:beam_asem` command which I couldn’t find through my research.
+
+
+
+
+
+
+
+# path_to_file = :code.which Elixir.MyApp.IndirectMod
+# {:beam_disasm.file(File.read!(path_to_file))}
+# {:ok,{_,[{:abstract_code,{_,ac}}]}}  = :beam_lib.chunks(path_to_file,[:abstract_code])
+
+
+# [
+#   {:attribute, 1, :file, {'lib/temp.ex', 1}},
+#   {:attribute, 1, :module, MyApp.IndirectMod},
+#   {:attribute, 1, :compile, :no_auto_import},
+#   {:attribute, 1, :export,
+#    [__info__: 1, indirect_value: 0, indirect_value_2: 0, value: 0]},
+#   {:attribute, 1, :spec,
+#    {{:__info__, 1},
+#     [
+#       {:type, 1, :fun,
+#        [
+#          {:type, 1, :product,
+#           [
+#             {:type, 1, :union,
+#              [
+#                {:atom, 1, :attributes},
+#                {:atom, 1, :compile},
+#                {:atom, 1, :functions},
+#                {:atom, 1, :macros},
+#                {:atom, 1, :md5},
+#                {:atom, 1, :module},
+#                {:atom, 1, :deprecated}
+#              ]}
+#           ]},
+#          {:type, 1, :any, []}
+#        ]}
+#     ]}},
+#   {:function, 0, :__info__, 1,
+#    [
+#      {:clause, 0, [{:atom, 0, :module}], [], [{:atom, 0, MyApp.IndirectMod}]},
+#      {:clause, 0, [{:atom, 0, :functions}], [],
+#       [
+#         {:cons, 0, {:tuple, 0, [{:atom, 0, :indirect_value}, {:integer, 0, 0}]},
+#          {:cons, 0,
+#           {:tuple, 0, [{:atom, 0, :indirect_value_2}, {:integer, 0, 0}]},
+#           {:cons, 0, {:tuple, 0, [{:atom, 0, :value}, {:integer, 0, 0}]},
+#            {nil, 0}}}}
+#       ]},
+#      {:clause, 0, [{:atom, 0, :macros}], [], [nil: 0]},
+#      {:clause, 0, [{:atom, 0, :attributes}], [],
+#       [
+#         {:call, 0,
+#          {:remote, 0, {:atom, 0, :erlang}, {:atom, 0, :get_module_info}},
+#          [{:atom, 0, MyApp.IndirectMod}, {:atom, 0, :attributes}]}
+#       ]},
+#      {:clause, 0, [{:atom, 0, :compile}], [],
+#       [
+#         {:call, 0,
+#          {:remote, 0, {:atom, 0, :erlang}, {:atom, 0, :get_module_info}},
+#          [{:atom, 0, MyApp.IndirectMod}, {:atom, 0, :compile}]}
+#       ]},
+#      {:clause, 0, [{:atom, 0, :md5}], [],
+#       [
+#         {:call, 0,
+#          {:remote, 0, {:atom, 0, :erlang}, {:atom, 0, :get_module_info}},
+#          [{:atom, 0, MyApp.IndirectMod}, {:atom, 0, :md5}]}
+#       ]},
+#      {:clause, 0, [{:atom, 0, :deprecated}], [], [nil: 0]}
+#    ]},
+#   {:function, 7, :indirect_value, 0,
+#    [{:clause, 7, [], [], [{:call, 8, {:atom, 8, :value}, []}]}]},
+#   {:function, 11, :indirect_value_2, 0,
+#    [{:clause, 11, [], [], [{:call, 8, {:atom, 8, :value}, []}]}]},
+#   {:function, 3, :value, 0, [{:clause, 3, [], [], [{:integer, 0, 1}]}]}
+# ]
