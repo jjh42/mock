@@ -134,6 +134,35 @@ defmodule Mock do
   end
 
   @doc """
+    Use inside a `with_mock` block to determine whether
+    a mocked function was called as expected. If the assertion fails, 
+    the calls that were received are displayed in the assertion message
+
+    ## Example
+
+        assert_called HTTPotion.get("http://example.com")
+    """
+  defmacro assert_called({{:., _, [module, f]}, _, args}) do
+    quote do
+      unquoted_module = unquote(module)
+      value = :meck.called(unquoted_module, unquote(f), unquote(args))
+
+      unless value do
+        calls = unquoted_module 
+                |> :meck.history()
+                |> Enum.with_index()
+                |> Enum.map(fn {{_, {m, f, a}, ret}, i} ->
+                  "#{i}. #{m}.#{f}(#{a |> Enum.map(&Kernel.inspect/1) |> Enum.join(",")}) (returned #{inspect ret})"
+                end)
+                |> Enum.join("\n")
+
+        raise ExUnit.AssertionError,
+          message: "Expected call but did not receive it. Calls which were received:\n\n#{calls}"
+      end
+    end
+  end
+
+  @doc """
   Mocks up multiple modules prior to the execution of each test in a case and
   execute the callback specified.
 
