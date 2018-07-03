@@ -39,7 +39,7 @@ defmodule MyTest do
     with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
       HTTPotion.get("http://example.com")
       # Tests that make the expected call
-      assert called HTTPotion.get("http://example.com")
+      assert_called HTTPotion.get("http://example.com")
     end
   end
 end
@@ -131,7 +131,7 @@ defmodule MyTest do
   test_with_mock "test_name", HTTPotion,
     [get: fn(_url) -> "<html></html>" end] do
     HTTPotion.get("http://example.com")
-    assert called HTTPotion.get("http://example.com")
+    assert_called HTTPotion.get("http://example.com")
   end
 end
 ````
@@ -154,7 +154,7 @@ defmodule MyTest do
     [get: fn(_url, _headers) -> doc end] do
 
     HTTPotion.get("http://example.com", [foo: :bar])
-    assert called HTTPotion.get("http://example.com", :_)
+    assert_called HTTPotion.get("http://example.com", :_)
   end
 end
 ````
@@ -175,7 +175,7 @@ defmodule MyTest do
 
   test_with_mock "test_name", IO, [:passthrough], [] do
     IO.puts "hello"
-    assert called IO.puts "hello"
+    assert_called IO.puts "hello"
   end
 end
 ````
