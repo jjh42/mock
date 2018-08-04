@@ -3,3 +3,5 @@
 /_build
 erl_crash.dump
 docs
+doc
+mock-*.tar
