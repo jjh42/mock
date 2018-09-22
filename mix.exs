@@ -12,7 +12,7 @@ defmodule Mock.Mixfile do
       package: package(),
       test_coverage: [tool: ExCoveralls],
       docs: [source_ref: "v#{@version}", main: "Mock"],
-      preferred_cli_env: ["coveralls": :test, "coveralls.detail": :test, "coveralls.post": :test],
+      preferred_cli_env: [coveralls: :test, "coveralls.detail": :test, "coveralls.post": :test],
       deps: deps() ]
   end
 
