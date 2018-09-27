@@ -208,6 +208,26 @@ of the methods above in the scope of a specific test. Providing this functionali
 by `setup_all` is more difficult, and as such, `setup_all_with_mocks` is not currently
 supported.
 
+Note that you can also called `refute called` to assert that a method is _not_ invoked.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      if(false) do
+        # this will NOT be called.
+        HTTPotion.get("http://example.com")
+      end
+      refute called HTTPotion.get("http://example.com")
+    end
+  end
+end
+````
+
 Currently, mocking modules cannot be done asynchronously, so make sure that you
 are not using `async: true` in any module where you are testing.
 
