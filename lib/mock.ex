@@ -123,9 +123,14 @@ defmodule Mock do
     Use inside a `with_mock` block to determine whether
     a mocked function was called as expected.
 
+    Pass `:_` as a function argument for wildcard matches.
+
     ## Example
 
         assert called HTTPotion.get("http://example.com")
+
+        # Matches any invocation
+        assert called HTTPotion.get(:_)
     """
   defmacro called({ {:., _, [ module , f ]} , _, args }) do
     quote do
@@ -136,11 +141,16 @@ defmodule Mock do
   @doc """
     Use inside a `with_mock` block to determine whether
     a mocked function was called as expected. If the assertion fails, 
-    the calls that were received are displayed in the assertion message
+    the calls that were received are displayed in the assertion message.
+
+    Pass `:_` as a function argument for wildcard matches.
 
     ## Example
 
         assert_called HTTPotion.get("http://example.com")
+
+        # Matches any invocation
+        assert_called HTTPotion.get(:_)
     """
   defmacro assert_called({{:., _, [module, f]}, _, args}) do
     quote do
