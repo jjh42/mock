@@ -140,7 +140,7 @@ defmodule Mock do
 
   @doc """
     Use inside a `with_mock` block to determine whether
-    a mocked function was called as expected. If the assertion fails, 
+    a mocked function was called as expected. If the assertion fails,
     the calls that were received are displayed in the assertion message.
 
     Pass `:_` as a function argument for wildcard matches.
@@ -158,7 +158,7 @@ defmodule Mock do
       value = :meck.called(unquoted_module, unquote(f), unquote(args))
 
       unless value do
-        calls = unquoted_module 
+        calls = unquoted_module
                 |> :meck.history()
                 |> Enum.with_index()
                 |> Enum.map(fn {{_, {m, f, a}, ret}, i} ->
@@ -251,7 +251,7 @@ defmodule Mock do
         end
 
         unquote(__MODULE__)._install_mock(m, mock_fns)
-        assert :meck.validate(m) == true
+        true = :meck.validate(m)
 
         [ m | ms] |> Enum.uniq
       end)
