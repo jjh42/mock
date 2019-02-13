@@ -21,13 +21,13 @@ end
 
 and run `$ mix deps.get`.
 
-## Example
+## *with_mock* - Mocking a single module
 The Mock library provides the `with_mock` macro for running tests with
 mocks.
 
 For a simple example, if you wanted to test some code which calls
 `HTTPotion.get` to get a webpage but without actually fetching the
-webpage you could do something like this.
+webpage you could do something like this:
 
 ```` elixir
 defmodule MyTest do
@@ -37,19 +37,21 @@ defmodule MyTest do
 
   test "test_name" do
     with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
-      HTTPotion.get("http://example.com")
-      # Tests that make the expected call
-      assert_called HTTPotion.get("http://example.com")
+      assert "<html></html>" == HTTPotion.get("http://example.com")
     end
   end
 end
 ````
 
-And you can mock up multiple modules with `with_mocks`.
+The `with_mock` macro creates a mock module. The keyword list provides a set
+of mock implementation for functions we want to provide in the mock (in
+this case just `get`). Inside `with_mock` we exercise the test code
+and we can check that the call was made as we expected using `called` and
+providing the example of the call we expected.
 
-`opts` List of optional arguments passed to meck. `:passthrough` will
-passthrough arguments to the original module. Pass `[]` as `opts` if you don't
-need this.
+## *with_mocks* - Mocking multiple modules
+
+You can mock up multiple modules with `with_mocks`.
 
 ```` elixir
 defmodule MyTest do
@@ -75,7 +77,13 @@ defmodule MyTest do
 end
 ````
 
-You can mock functions that return different values depending on the input:
+The second parameter of each tuple is `opts` - a list of optional arguments
+passed to meck.
+
+## Mocking input dependant output
+
+If you have a function that should return different values depending on what the
+input is, you can do as follows:
 
 ```` elixir
 defmodule MyTest do
@@ -97,8 +105,10 @@ defmodule MyTest do
 end
 ````
 
-You can mock functions in the same module with different arity.
-The same way you could mock function with optional args.
+## Mocking functions with different arities
+
+You can mock functions in the same module with different arity:
+
 ```` elixir
 defmodule MyTest do
   use ExUnit.Case, async: false
@@ -118,9 +128,10 @@ end
 
 ````
 
-An additional convenience macro `test_with_mock` is supplied which
-internally delegates to `with_mock`. Allowing the above test to be
-written as follows:
+## *test_with_mock* - with_mock helper
+
+An additional convenience macro `test_with_mock` is supplied which internally
+delegates to `with_mock`. Allowing the above test to be written as follows:
 
 ```` elixir
 defmodule MyTest do
@@ -159,15 +170,12 @@ defmodule MyTest do
 end
 ````
 
-The `with_mock` creates a mock module. The keyword list provides a set
-of mock implementation for functions we want to provide in the mock (in
-this case just `get`). Inside `with_mock` we exercise the test code
-and we can check that the call was made as we expected using `called` and
-providing the example of the call we expected (the second argument `:_` has a
-special meaning of matching anything).
+## *passthrough*
 
-You can also pass the option `:passthrough` to retain the original module
-functionality. For example
+By default, only the functions being mocked can be accessed from within the test.
+Trying to call a non-mocked function from a mocked Module will result in an error.
+This can be circumvented by passing the `:passthrough` option like so:
+
 ```` elixir
 defmodule MyTest do
   use ExUnit.Case, async: false
@@ -180,8 +188,10 @@ defmodule MyTest do
 end
 ````
 
+## *setup_with_mocks* - Configure all tests to have the same mocks
+
 The `setup_with_mocks` mocks up multiple modules prior to every single test
-along with calling the provided setup block. It is simply an integration of the
+along while calling the provided setup block. It is simply an integration of the
 `with_mocks` macro available in this module along with the [`setup`](https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html#setup/1)
 macro defined in elixir's `ExUnit`.
 
@@ -213,6 +223,112 @@ are not using `async: true` in any module where you are testing.
 
 Also, because of the way mock overrides the module, it must be defined in a
 separate file from the test file.
+
+## NOT SUPPORTED - Mocking internal function calls
+
+A common issue a lot of developers run into is Mock's lack of support for mocking
+internal functions. Mock will behave as follows:
+
+```` elixir
+defmodule MyApp.IndirectMod do
+
+  def value do
+    1
+  end
+
+  def indirect_value do
+    value()
+  end
+
+  def indirect_value_2 do
+    MyApp.IndirectMod.value()
+  end
+
+end
+````
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+  import Mock
+
+  test "indirect mock" do
+    with_mocks([
+      { MyApp.IndirectMod, [:passthrough], [value: fn -> 2 end] },
+    ]) do
+      # The following assert succeeds
+      assert MyApp.IndirectMod.indirect_value_2() == 2
+      # The following assert also succeeds
+      assert MyApp.IndirectMod.indirect_value() == 1
+    end
+  end
+end
+````
+
+It is important to understand that only fully qualified function calls get mocked.
+The reason for this is because of the way Meck is structured. Meck creates a thin wrapper module with the name of the mocked module (and passes through any calls to the original
+Module in case passthrough is used). The original module is renamed, but otherwise unmodified. Once the call enters the original module, the local function call jumps stay in the module.
+
+Big thanks to @eproxus (author of Meck) who helped explain this to me. We're looking
+into some alternatives to help solve this, but it is something to be aware of in the meantime. The issue is being tracked in [Issue 71](https://github.com/jjh42/mock/issues/71).
+
+In order to workaround this issue, the `indirect_value` can be rewritten like so:
+```` elixir
+  def indirect_value do
+    __MODULE__.value()
+  end
+````
+
+Or, like so:
+
+```` elixir
+  def indirect_value do
+    MyApp.IndirectMod.value()
+  end
+````
+
+## Assert called
+
+You can check whether or not your mocked module was called.
+
+### Assert called - specific value
+
+It is possible to assert that the mocked module was called with a specific input.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      assert_called HTTPotion.get("http://example.com")
+    end
+  end
+end
+````
+
+### Assert called - wildcard
+
+It is also possible to assert that the mocked module was called with any value
+by passing the `:_` wildcard.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      assert_called HTTPotion.get(:_)
+    end
+  end
+end
+````
 
 ## Tips
 The use of mocking can be somewhat controversial. I personally think that it
