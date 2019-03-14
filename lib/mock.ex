@@ -198,8 +198,9 @@ defmodule Mock do
       setup do
         mock_modules(unquote(mocks))
 
-        # The mocks are linked to the process that setup all the tests and are
-        # automatically unloaded when that process shuts down
+        on_exit(fn ->
+          :meck.unload()
+        end)
 
         unquote(setup_block)
       end
@@ -228,6 +229,11 @@ defmodule Mock do
     quote do
       setup unquote(context) do
         mock_modules(unquote(mocks))
+
+        on_exit(fn ->
+          :meck.unload()
+        end)
+
         unquote(setup_block)
       end
     end
