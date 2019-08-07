@@ -92,14 +92,14 @@ defmodule MyTest do
   import Mock
 
   test "mock functions with multiple returns" do
-    with_mocks(HTTPotion, [
+    with_mock(Map, [
       get: fn
-        "http://example.com" -> "<html>Hello from example.com</html>"
-        "http://example.org" -> "<html>example.org says hi</html>"
+        (%{}, "http://example.com") -> "<html>Hello from example.com</html>"
+        (%{}, "http://example.org") -> "<html>example.org says hi</html>"
       end
     ]) do
-      assert HTTPotion.get("http://example.com") == "<html>Hello from example.com</html>"
-      assert HTTPotion.get("http://example.org") == "<html>example.org says hi</html>"
+      assert Map.get(%{}, "http://example.com") == "<html>Hello from example.com</html>"
+      assert Map.get(%{}, "http://example.org") == "<html>example.org says hi</html>"
     end
   end
 end
