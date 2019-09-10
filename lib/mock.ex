@@ -120,6 +120,24 @@ defmodule Mock do
   end
 
   @doc """
+  Call original function inside mock anonymous function.
+  Allows overriding only a certain behavior of a function.
+  Compatible with passthrough option.
+
+  ## Example
+
+      with_mock String, [:passthrough], [reverse: fn(str) ->
+           passthrough([str]) <> "!" end] do
+         assert String.reverse("xyz") == "zyx!"
+      end
+  """
+  defmacro passthrough(args) do
+    quote do
+      :meck.passthrough(unquote(args))
+    end
+  end
+
+  @doc """
     Use inside a `with_mock` block to determine whether
     a mocked function was called as expected.
 
