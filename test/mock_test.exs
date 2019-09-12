@@ -112,13 +112,19 @@ defmodule MockTest do
     refute called String.reverse(4)
   end
 
-  test_with_mock "passthrough", Map, [:passthrough],
+  test_with_mock "passthrough option", Map, [:passthrough],
     [] do
     hd = Map.put(Map.new(), :a, 1)
     assert Map.get(hd, :a) == 1
     assert called Map.new()
     assert called Map.get(hd, :a)
     refute called Map.get(hd, :b)
+  end
+
+  test_with_mock "passthrough in anon mock function", String, [:passthrough],
+    [reverse: fn x -> passthrough([x]) <> "!" end] do
+    assert String.reverse("xyz") == "zyx!"
+    assert called String.reverse("xyz")
   end
 
   test "restore after exception" do
