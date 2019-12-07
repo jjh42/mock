@@ -1,5 +1,4 @@
 [![Build Status](https://travis-ci.org/jjh42/mock.svg?branch=master)](https://travis-ci.org/jjh42/mock)
-[![Coverage Status](https://coveralls.io/repos/github/jjh42/mock/badge.svg?branch=master)](https://coveralls.io/github/jjh42/mock?branch=master)
 
 # Mock
 A mocking library for the Elixir language.
@@ -9,6 +8,24 @@ module mocking functionality for Elixir. It uses macros in Elixir to expose the
 functionality in a convenient manner for integrating in Elixir tests.
 
 See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
+
+# Table of Contents
+* [Mock](#Mock)
+	* [Installation](#Installation)
+	* [*with_mock* - Mocking a single module](#*with_mock*---Mocking-a-single-module)
+	* [*with_mocks* - Mocking multiple modules](#*with_mocks*---Mocking-multiple-modules)
+	* [*test_with_mock* - with_mock helper](#*test_with_mock*---with_mock-helper)
+	* [*setup_with_mocks* - Configure all tests to have the same mocks](#*setup_with_mocks*---Configure-all-tests-to-have-the-same-mocks)
+	* [Mocking input dependant output](#Mocking-input-dependant-output)
+	* [Mocking functions with different arities](#Mocking-functions-with-different-arities)
+	* [*passthrough* - partial mocking of a module](#*passthrough*---partial-mocking-of-a-module)
+	* [Assert called - assert a specific function was called](#Assert-called---assert-a-specific-function-was-called)
+		* [Assert called - specific value](#Assert-called---specific-value)
+		* [Assert called - wildcard](#Assert-called---wildcard)
+	* [NOT SUPPORTED - Mocking internal function calls](#NOT-SUPPORTED---Mocking-internal-function-calls)
+	* [Tips](#Tips)
+	* [Help](#Help)
+	* [Suggestions](#Suggestions)
 
 ## Installation
 First, add mock to your `mix.exs` dependencies:
@@ -80,6 +97,84 @@ end
 The second parameter of each tuple is `opts` - a list of optional arguments
 passed to meck.
 
+## *test_with_mock* - with_mock helper
+
+An additional convenience macro `test_with_mock` is supplied which internally
+delegates to `with_mock`. Allowing the above test to be written as follows:
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test_with_mock "test_name", HTTPotion,
+    [get: fn(_url) -> "<html></html>" end] do
+    HTTPotion.get("http://example.com")
+    assert_called HTTPotion.get("http://example.com")
+  end
+end
+````
+
+The `test_with_mock` macro can also be passed a context argument
+allowing the sharing of information between callbacks and the test
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  setup do
+    doc = "<html></html>"
+    {:ok, doc: doc}
+  end
+
+  test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
+    [get: fn(_url, _headers) -> doc end] do
+
+    HTTPotion.get("http://example.com", [foo: :bar])
+    assert_called HTTPotion.get("http://example.com", :_)
+  end
+end
+````
+
+## *setup_with_mocks* - Configure all tests to have the same mocks
+
+The `setup_with_mocks` mocks up multiple modules prior to every single test
+along while calling the provided setup block. It is simply an integration of the
+`with_mocks` macro available in this module along with the [`setup`](https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html#setup/1)
+macro defined in elixir's `ExUnit`.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+  import Mock
+
+  setup_with_mocks([
+    {Map, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+  ]) do
+    foo = "bar"
+    {:ok, foo: foo}
+  end
+
+  test "setup_with_mocks" do
+    assert Map.get(%{}, "http://example.com") == "<html></html>"
+  end
+end
+````
+
+The behaviour of a mocked module within the setup call can be overridden using any
+of the methods above in the scope of a specific test. Providing this functionality
+by `setup_all` is more difficult, and as such, `setup_all_with_mocks` is not currently
+supported.
+
+Currently, mocking modules cannot be done asynchronously, so make sure that you
+are not using `async: true` in any module where you are testing.
+
+Also, because of the way mock overrides the module, it must be defined in a
+separate file from the test file.
+
 ## Mocking input dependant output
 
 If you have a function that should return different values depending on what the
@@ -128,49 +223,7 @@ end
 
 ````
 
-## *test_with_mock* - with_mock helper
-
-An additional convenience macro `test_with_mock` is supplied which internally
-delegates to `with_mock`. Allowing the above test to be written as follows:
-
-```` elixir
-defmodule MyTest do
-  use ExUnit.Case, async: false
-
-  import Mock
-
-  test_with_mock "test_name", HTTPotion,
-    [get: fn(_url) -> "<html></html>" end] do
-    HTTPotion.get("http://example.com")
-    assert_called HTTPotion.get("http://example.com")
-  end
-end
-````
-
-The `test_with_mock` macro can also be passed a context argument
-allowing the sharing of information between callbacks and the test
-
-```` elixir
-defmodule MyTest do
-  use ExUnit.Case, async: false
-
-  import Mock
-
-  setup do
-    doc = "<html></html>"
-    {:ok, doc: doc}
-  end
-
-  test_with_mock "test_with_mock with context", %{doc: doc}, HTTPotion, [],
-    [get: fn(_url, _headers) -> doc end] do
-
-    HTTPotion.get("http://example.com", [foo: :bar])
-    assert_called HTTPotion.get("http://example.com", :_)
-  end
-end
-````
-
-## *passthrough*
+## *passthrough* - partial mocking of a module
 
 By default, only the functions being mocked can be accessed from within the test.
 Trying to call a non-mocked function from a mocked Module will result in an error.
@@ -188,41 +241,48 @@ defmodule MyTest do
 end
 ````
 
-## *setup_with_mocks* - Configure all tests to have the same mocks
+## Assert called - assert a specific function was called
 
-The `setup_with_mocks` mocks up multiple modules prior to every single test
-along while calling the provided setup block. It is simply an integration of the
-`with_mocks` macro available in this module along with the [`setup`](https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html#setup/1)
-macro defined in elixir's `ExUnit`.
+You can check whether or not your mocked module was called.
+
+### Assert called - specific value
+
+It is possible to assert that the mocked module was called with a specific input.
 
 ```` elixir
 defmodule MyTest do
   use ExUnit.Case, async: false
+
   import Mock
 
-  setup_with_mocks([
-    {Map, [], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
-  ]) do
-    foo = "bar"
-    {:ok, foo: foo}
-  end
-
-  test "setup_with_mocks" do
-    assert Map.get(%{}, "http://example.com") == "<html></html>"
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      assert_called HTTPotion.get("http://example.com")
+    end
   end
 end
 ````
 
-The behaviour of a mocked module within the setup call can be overridden using any
-of the methods above in the scope of a specific test. Providing this functionality
-by `setup_all` is more difficult, and as such, `setup_all_with_mocks` is not currently
-supported.
+### Assert called - wildcard
 
-Currently, mocking modules cannot be done asynchronously, so make sure that you
-are not using `async: true` in any module where you are testing.
+It is also possible to assert that the mocked module was called with any value
+by passing the `:_` wildcard.
 
-Also, because of the way mock overrides the module, it must be defined in a
-separate file from the test file.
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      assert_called HTTPotion.get(:_)
+    end
+  end
+end
+````
 
 ## NOT SUPPORTED - Mocking internal function calls
 
@@ -285,49 +345,6 @@ Or, like so:
   def indirect_value do
     MyApp.IndirectMod.value()
   end
-````
-
-## Assert called
-
-You can check whether or not your mocked module was called.
-
-### Assert called - specific value
-
-It is possible to assert that the mocked module was called with a specific input.
-
-```` elixir
-defmodule MyTest do
-  use ExUnit.Case, async: false
-
-  import Mock
-
-  test "test_name" do
-    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
-      HTTPotion.get("http://example.com")
-      assert_called HTTPotion.get("http://example.com")
-    end
-  end
-end
-````
-
-### Assert called - wildcard
-
-It is also possible to assert that the mocked module was called with any value
-by passing the `:_` wildcard.
-
-```` elixir
-defmodule MyTest do
-  use ExUnit.Case, async: false
-
-  import Mock
-
-  test "test_name" do
-    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
-      HTTPotion.get("http://example.com")
-      assert_called HTTPotion.get(:_)
-    end
-  end
-end
 ````
 
 ## Tips
