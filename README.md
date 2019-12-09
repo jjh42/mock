@@ -284,6 +284,92 @@ defmodule MyTest do
 end
 ````
 
+### Assert called - pattern matching
+
+`assert_called` will check argument equality using `==` semantics, not pattern matching.
+For structs, you must provide every property present on the argument as it was called or
+it will fail. To use pattern matching (useful when you only care about a few properties on
+the argument or need to perform advanced matching like regex matching), provide custom
+argument matcher(s) using [`:meck.is/1`](https://hexdocs.pm/meck/meck.html#is-1).
+
+```` elixir
+defmodule User do
+  defstruct [:id, :name, :email]
+end
+
+defmodule Network do
+  def update(%User{} = user), do: # ...
+end
+
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock Network, [update: fn(_user) -> :ok end] do
+      user = %User{id: 1, name: "Jane Doe", email: "jane.doe@gmail.com"}
+      Network.update(user)
+
+      assert_called Network.update(
+        :meck.is(fn user ->
+          assert user.__struct__ = User
+          assert user.id = 1
+
+          # matcher must return true when the match succeeds
+          true
+        end)
+      )
+    end
+  end
+end
+````
+
+You can use any valid Elixir pattern matching/multiple function heads to accomplish
+this more succinctly, but remember that the matcher will be executed for _all_ function
+calls, so be sure to include a fallback case that returns `false`. For mocked functions
+with multiple arguments, you must include a matcher/pattern for each argument.
+
+```` elixir
+defmodule Network.V2 do
+  def update(%User{} = user, changes), do: # ...
+
+  def update(id, changes) when is_integer(id), do: # ...
+
+  def update(_, _), do: # ...
+end
+
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    Network.V2.update(%User{id: 456, name: "Jane Doe"}, %{name: "John Doe"})
+    Network.V2.update(123, %{name: "John Doe", email: "john.doe@gmail.com"})
+    Network.V2.update(nil, %{})
+
+    # assert that `update` was called with user id 456
+    assert_called Network.V2.update(
+      :meck.is(fn
+        %User{id: 456} -> true
+        _ -> false
+      end),
+      :_
+    )
+
+    # assert that `update` was called with an email change
+    assert_called Network.V2.update(
+      :_,
+      :meck.is(fn
+        %{email: "john.doe@gmail.com"} -> true
+        _ -> false
+      end)
+    )
+  end
+end
+````
+
 ## NOT SUPPORTED - Mocking internal function calls
 
 A common issue a lot of developers run into is Mock's lack of support for mocking
