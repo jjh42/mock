@@ -346,27 +346,29 @@ defmodule MyTest do
   import Mock
 
   test "test_name" do
-    Network.V2.update(%User{id: 456, name: "Jane Doe"}, %{name: "John Doe"})
-    Network.V2.update(123, %{name: "John Doe", email: "john.doe@gmail.com"})
-    Network.V2.update(nil, %{})
+    with_mock Network.V2, [update: fn(_user, _changes) -> :ok end] do
+      Network.V2.update(%User{id: 456, name: "Jane Doe"}, %{name: "John Doe"})
+      Network.V2.update(123, %{name: "John Doe", email: "john.doe@gmail.com"})
+      Network.V2.update(nil, %{})
 
-    # assert that `update` was called with user id 456
-    assert_called Network.V2.update(
-      :meck.is(fn
-        %User{id: 456} -> true
-        _ -> false
-      end),
-      :_
-    )
+      # assert that `update` was called with user id 456
+      assert_called Network.V2.update(
+        :meck.is(fn
+          %User{id: 456} -> true
+          _ -> false
+        end),
+        :_
+      )
 
-    # assert that `update` was called with an email change
-    assert_called Network.V2.update(
-      :_,
-      :meck.is(fn
-        %{email: "john.doe@gmail.com"} -> true
-        _ -> false
-      end)
-    )
+      # assert that `update` was called with an email change
+      assert_called Network.V2.update(
+        :_,
+        :meck.is(fn
+          %{email: "john.doe@gmail.com"} -> true
+          _ -> false
+        end)
+      )
+    end
   end
 end
 ````
