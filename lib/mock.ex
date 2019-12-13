@@ -191,6 +191,27 @@ defmodule Mock do
   end
 
   @doc """
+  Helper function to get the hsitory of mock functions executed.
+
+  ## Example
+
+      call_history HTTPotion
+      [
+        {pid, {HTTPotion, :get, ["http://example.com"]}, some_return_value}
+      ]
+
+
+  """
+  defmacro call_history(module) do
+    quote do
+      unquoted_module = unquote(module)
+
+      unquoted_module
+      |> :meck.history()
+    end
+  end
+
+  @doc """
   Mocks up multiple modules prior to the execution of each test in a case and
   execute the callback specified.
 
