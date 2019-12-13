@@ -41,9 +41,8 @@ defmodule Mock do
   """
   defmacro with_mock(mock_module, opts \\ [], mocks, do: test) do
     quote do
-      unquote(__MODULE__).with_mocks([{unquote(mock_module), unquote(opts), unquote(mocks)}],
-        do: unquote(test)
-      )
+      unquote(__MODULE__).with_mocks(
+       [{unquote(mock_module), unquote(opts), unquote(mocks)}], do: unquote(test))
     end
   end
 
@@ -86,11 +85,7 @@ defmodule Mock do
     quote do
       test unquote(test_name) do
         unquote(__MODULE__).with_mock(
-          unquote(mock_module),
-          unquote(opts),
-          unquote(mocks),
-          unquote(test_block)
-        )
+            unquote(mock_module), unquote(opts), unquote(mocks), unquote(test_block))
       end
     end
   end
@@ -119,11 +114,7 @@ defmodule Mock do
     quote do
       test unquote(test_name), unquote(context) do
         unquote(__MODULE__).with_mock(
-          unquote(mock_module),
-          unquote(opts),
-          unquote(mocks),
-          unquote(test_block)
-        )
+            unquote(mock_module), unquote(opts), unquote(mocks), unquote(test_block))
       end
     end
   end
@@ -147,79 +138,55 @@ defmodule Mock do
   end
 
   @doc """
-  Use inside a `with_mock` block to determine whether
-  a mocked function was called as expected.
+    Use inside a `with_mock` block to determine whether
+    a mocked function was called as expected.
 
-  Pass `:_` as a function argument for wildcard matches.
+    Pass `:_` as a function argument for wildcard matches.
 
-  ## Example
+    ## Example
 
-      assert called HTTPotion.get("http://example.com")
+        assert called HTTPotion.get("http://example.com")
 
-      # Matches any invocation
-      assert called HTTPotion.get(:_)
-  """
-  defmacro called({{:., _, [module, f]}, _, args}) do
+        # Matches any invocation
+        assert called HTTPotion.get(:_)
+    """
+  defmacro called({ {:., _, [ module , f ]} , _, args }) do
     quote do
-      :meck.called(unquote(module), unquote(f), unquote(args))
+      :meck.called unquote(module), unquote(f), unquote(args)
     end
   end
 
   @doc """
-  Use inside a `with_mock` block to determine whether
-  a mocked function was called as expected. If the assertion fails,
-  the calls that were received are displayed in the assertion message.
+    Use inside a `with_mock` block to determine whether
+    a mocked function was called as expected. If the assertion fails,
+    the calls that were received are displayed in the assertion message.
 
-  Pass `:_` as a function argument for wildcard matches.
+    Pass `:_` as a function argument for wildcard matches.
 
-  ## Example
+    ## Example
 
-      assert_called HTTPotion.get("http://example.com")
+        assert_called HTTPotion.get("http://example.com")
 
-      # Matches any invocation
-      assert_called HTTPotion.get(:_)
-  """
+        # Matches any invocation
+        assert_called HTTPotion.get(:_)
+    """
   defmacro assert_called({{:., _, [module, f]}, _, args}) do
     quote do
       unquoted_module = unquote(module)
       value = :meck.called(unquoted_module, unquote(f), unquote(args))
 
       unless value do
-        calls =
-          unquoted_module
-          |> :meck.history()
-          |> Enum.with_index()
-          |> Enum.map(fn {{_, {m, f, a}, ret}, i} ->
-            "#{i}. #{m}.#{f}(#{a |> Enum.map(&Kernel.inspect/1) |> Enum.join(",")}) (returned #{
-              inspect(ret)
-            })"
-          end)
-          |> Enum.join("\n")
+        calls = unquoted_module
+                |> :meck.history()
+                |> Enum.with_index()
+                |> Enum.map(fn {{_, {m, f, a}, ret}, i} ->
+                  "#{i}. #{m}.#{f}(#{a |> Enum.map(&Kernel.inspect/1) |> Enum.join(",")}) (returned #{inspect ret})"
+                end)
+                |> Enum.join("\n")
 
         raise ExUnit.AssertionError,
           message: "Expected call but did not receive it. Calls which were received:\n\n#{calls}"
       end
-    end
-  end
-
-  @doc """
-  Helper function to get the hsitory of mock functions executed.
-
-  ## Example
-
-      call_history HTTPotion
-      [
-        {pid, {HTTPotion, :get, ["http://example.com"]}, some_return_value}
-      ]
-
-
-  """
-  defmacro call_history(module) do
-    quote do
-      unquoted_module = unquote(module)
-
-      unquoted_module
-      |> :meck.history()
     end
   end
 
@@ -294,7 +261,7 @@ defmodule Mock do
   # but not defined as `defmacrop` due to the scope within which it's used.
   defmacro mock_modules(mocks) do
     quote do
-      Enum.reduce(unquote(mocks), [], fn {m, opts, mock_fns}, ms ->
+      Enum.reduce(unquote(mocks), [], fn({m, opts, mock_fns}, ms) ->
         unless m in ms do
           # :meck.validate will throw an error if trying to validate
           # a module that was not mocked
@@ -310,15 +277,14 @@ defmodule Mock do
         unquote(__MODULE__)._install_mock(m, mock_fns)
         true = :meck.validate(m)
 
-        [m | ms] |> Enum.uniq()
+        [ m | ms] |> Enum.uniq
       end)
     end
   end
 
   @doc false
   def _install_mock(_, []), do: :ok
-
-  def _install_mock(mock_module, [{fn_name, value} | tail]) do
+  def _install_mock(mock_module, [ {fn_name, value} | tail ]) do
     :meck.expect(mock_module, fn_name, value)
     _install_mock(mock_module, tail)
   end
