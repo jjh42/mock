@@ -326,6 +326,33 @@ defmodule MyTest do
 end
 ````
 
+### Assert call order
+
+`call_history` will return the `meck.history(Module)` allowing you assert on the order of the function invocation:
+
+```elixir
+
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+
+      assert call_history(HTTPotion) ==
+        [
+          {pid, {HTTPotion, :get, ["http://example.com"]}, "<html></html>"}
+        ]
+    end
+  end
+end
+  
+  
+```
+
+
 You can use any valid Elixir pattern matching/multiple function heads to accomplish
 this more succinctly, but remember that the matcher will be executed for _all_ function
 calls, so be sure to include a fallback case that returns `false`. For mocked functions
