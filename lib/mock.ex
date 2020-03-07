@@ -50,7 +50,7 @@ defmodule Mock do
   Mock up multiple modules for the duration of `test`.
 
   ## Example
-      with_mocks([{HTTPotion, opts, [{get: fn("http://example.com") -> "<html></html>" end}]}]) do
+      with_mocks([{HTTPotion, opts, [get: fn("http://example.com") -> "<html></html>" end]}]) do
         # Tests that make the expected call
         assert called HTTPotion.get("http://example.com")
       end
