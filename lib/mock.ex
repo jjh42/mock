@@ -195,11 +195,9 @@ defmodule Mock do
 
   ## Example
 
-      call_history HTTPotion
-      [
-        {pid, {HTTPotion, :get, ["http://example.com"]}, some_return_value}
-      ]
-
+      iex> assert call_history(HTTPotion) == [
+          {pid, {HTTPotion, :get, ["http://example.com"]}, some_return_value}
+        ]
 
   """
   defmacro call_history(module) do
