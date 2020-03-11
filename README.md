@@ -23,6 +23,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 		* [Assert called - specific value](#Assert-called---specific-value)
 		* [Assert called - wildcard](#Assert-called---wildcard)
 		* [Assert called - pattern matching](#Assert-called---pattern-matching)
+		* [Assert call order](#Assert-call-order)
 	* [NOT SUPPORTED - Mocking internal function calls](#NOT-SUPPORTED---Mocking-internal-function-calls)
 	* [Tips](#Tips)
 	* [Help](#Help)
