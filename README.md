@@ -315,8 +315,8 @@ defmodule MyTest do
 
       assert_called Network.update(
         :meck.is(fn user ->
-          assert user.__struct__ = User
-          assert user.id = 1
+          assert user.__struct__ == User
+          assert user.id == 1
 
           # matcher must return true when the match succeeds
           true
