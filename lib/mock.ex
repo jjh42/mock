@@ -191,6 +191,35 @@ defmodule Mock do
   end
 
   @doc """
+    Use inside a `with_mock` block to check if
+    a mocked function was NOT called. If the assertion fails,
+    the number of calls is displayed in the assertion message.
+
+    Pass `:_` as a function argument for wildcard matches.
+
+    ## Example
+
+        assert_not_called HTTPotion.get("http://example.com")
+
+        # Matches any invocation
+        assert_not_called HTTPotion.get(:_)
+    """
+  defmacro assert_not_called({{:., _, [module, f]}, _, args}) do
+    quote do
+      unquoted_module = unquote(module)
+      unquoted_f = unquote(f)
+      unquoted_args = unquote(args)
+      num_calls = :meck.num_calls(unquoted_module, unquoted_f, unquoted_args)
+
+      if num_calls > 0 do
+        mfa_str = "#{unquoted_module}.#{unquoted_f}(#{unquoted_args |> Enum.map(&Kernel.inspect/1) |> Enum.join(", ")})"
+        raise ExUnit.AssertionError,
+          message: "Expected #{mfa_str} not to be called, but it was called (number of calls: #{num_calls})"
+      end
+    end
+  end
+
+  @doc """
   Helper function to get the hsitory of mock functions executed.
 
   ## Example
