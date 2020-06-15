@@ -24,6 +24,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 		* [Assert called - wildcard](#Assert-called---wildcard)
 		* [Assert called - pattern matching](#Assert-called---pattern-matching)
 		* [Assert call order](#Assert-call-order)
+	* [Assert not called - assert a specific function was not called](#Assert-not-called---assert-a-specific-function-was-not-called)
 	* [NOT SUPPORTED - Mocking internal function calls](#NOT-SUPPORTED---Mocking-internal-function-calls)
 	* [Tips](#Tips)
 	* [Help](#Help)
@@ -327,12 +328,35 @@ defmodule MyTest do
 end
 ````
 
+## Assert not called - assert a specific function was not called
+
+`assert_not_called` will assert that a mocked function was not called.
+
+```elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      # Using Wildcard
+      assert_not_called HTTPotion.get(:_)
+
+      HTTPotion.get("http://example.com")
+
+      # Using Specific Value
+      assert_not_called HTTPotion.get("http://another-example.com")
+    end
+  end
+end
+```
+
 ### Assert call order
 
 `call_history` will return the `meck.history(Module)` allowing you assert on the order of the function invocation:
 
 ```elixir
-
 defmodule MyTest do
   use ExUnit.Case, async: false
 
@@ -349,8 +373,6 @@ defmodule MyTest do
     end
   end
 end
-  
-  
 ```
 
 
