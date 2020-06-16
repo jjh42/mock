@@ -500,5 +500,15 @@ tests set `async: false` so that only one test runs at a time.
 ## Help
 Open an issue.
 
+## Publishing New Package Versions
+For library maintainers, the following is an example of how to publish new versions of the package. Run the following commands assuming you incremented the version in the `mix.exs` file from 0.3.4 to 0.3.5:
+
+```
+git commit -am "Increase version from 0.3.4 to 0.3.5"
+git tag -a v0.3.5 -m "Git tag 0.3.5"
+git push origin --tags
+mix hex.publish
+```
+
 ## Suggestions
 I'd welcome suggestions for improvements or bugfixes. Just open an issue.
