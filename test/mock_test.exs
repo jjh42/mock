@@ -96,6 +96,24 @@ defmodule MockTest do
     end
   end
 
+  test "assert_called_exactly" do
+    with_mock String, [reverse: fn(x) -> 2*x end] do
+      String.reverse(2)
+      String.reverse(2)
+      String.reverse(2)
+      assert_called_exactly(String.reverse(2), 3)
+
+      try do
+        assert_called_exactly(String.reverse(2), 2)
+      rescue
+        error in [ExUnit.AssertionError] ->
+          """
+          Expected Elixir.String.reverse(2) to be called exactly 2 time(s), but it was called (number of calls: 3)\
+          """ = error.message
+      end
+    end
+  end
+
   test "assert_not_called" do
     with_mock String,
       [reverse: fn(x) -> 2*x end] do

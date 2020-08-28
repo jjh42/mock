@@ -25,6 +25,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 		* [Assert called - pattern matching](#Assert-called---pattern-matching)
 		* [Assert call order](#Assert-call-order)
 	* [Assert not called - assert a specific function was not called](#Assert-not-called---assert-a-specific-function-was-not-called)
+	* [Assert called exactly - assert a specific function was called exactly x times](#Assert-called-exactly---assert-a-specific-function-was-called-exactly-x-times)
 	* [NOT SUPPORTED - Mocking internal function calls](#NOT-SUPPORTED---Mocking-internal-function-calls)
 	* [Tips](#Tips)
 	* [Help](#Help)
@@ -347,6 +348,31 @@ defmodule MyTest do
 
       # Using Specific Value
       assert_not_called HTTPotion.get("http://another-example.com")
+    end
+  end
+end
+```
+
+## Assert called exactly - assert a specific function was called exactly x times
+
+`assert_called_exactly` will assert that a mocked function was called exactly the expected number of times.
+
+```elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      HTTPotion.get("http://example.com")
+
+      # Using Wildcard
+      assert_called_exactly HTTPotion.get(:_), 2
+
+      # Using Specific Value
+      assert_called_exactly HTTPotion.get("http://example.com"), 2
     end
   end
 end
