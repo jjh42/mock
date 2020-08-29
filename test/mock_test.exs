@@ -77,14 +77,12 @@ defmodule MockTest do
   end
 
   test "assert_called" do
-    with_mock String,
-      [reverse: fn(x) -> 2*x end,
-      length: fn(_x) -> :ok end] do
+    with_mock String, [reverse: fn(x) -> 2*x end] do
       String.reverse(3)
       assert_called(String.reverse(3))
 
       try do
-            "This should never be tested" = assert_called(String.reverse(2))
+        "This should never be tested" = assert_called(String.reverse(2))
       rescue
         error in [ExUnit.AssertionError] ->
           """
