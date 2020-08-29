@@ -191,6 +191,36 @@ defmodule Mock do
   end
 
   @doc """
+    Use inside a `with_mock` block to determine whether a mocked function was called
+    as expected exactly x times. If the assertion fails, the number of calls that
+    were received is displayed in the assertion message.
+
+    Pass `:_` as a function argument for wildcard matches.
+
+    ## Example
+
+        assert_called_exactly HTTPotion.get("http://example.com"), 2
+
+        # Matches any invocation
+        assert_called_exactly HTTPotion.get(:_), 2
+  """
+  defmacro assert_called_exactly({{:., _, [module, f]}, _, args}, call_times) do
+    quote do
+      unquoted_module = unquote(module)
+      unquoted_f = unquote(f)
+      unquoted_args = unquote(args)
+      unquoted_call_times = unquote(call_times)
+      num_calls = :meck.num_calls(unquoted_module, unquoted_f, unquoted_args)
+
+      if num_calls != unquoted_call_times do
+        mfa_str = "#{unquoted_module}.#{unquoted_f}(#{unquoted_args |> Enum.map(&Kernel.inspect/1) |> Enum.join(", ")})"
+        raise ExUnit.AssertionError,
+          message: "Expected #{mfa_str} to be called exactly #{unquoted_call_times} time(s), but it was called (number of calls: #{num_calls})"
+      end
+    end
+  end
+
+  @doc """
     Use inside a `with_mock` block to check if
     a mocked function was NOT called. If the assertion fails,
     the number of calls is displayed in the assertion message.
