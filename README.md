@@ -195,7 +195,7 @@ defmodule MyTest do
       get: fn
         (%{}, "http://example.com") -> "<html>Hello from example.com</html>"
         (%{}, "http://example.org") -> "<html>example.org says hi</html>"
-	(%{}, url) -> conditionally_mocked(url)
+        (%{}, url) -> conditionally_mocked(url)
       end
     ]) do
       assert Map.get(%{}, "http://example.com") == "<html>Hello from example.com</html>"
