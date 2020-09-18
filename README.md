@@ -195,41 +195,24 @@ defmodule MyTest do
       get: fn
         (%{}, "http://example.com") -> "<html>Hello from example.com</html>"
         (%{}, "http://example.org") -> "<html>example.org says hi</html>"
+	(%{}, url) -> conditionally_mocked(url)
       end
     ]) do
       assert Map.get(%{}, "http://example.com") == "<html>Hello from example.com</html>"
       assert Map.get(%{}, "http://example.org") == "<html>example.org says hi</html>"
+      assert Map.get(%{}, "http://example.xyz") == "<html>Hello from example.xyz</html>"
+      assert Map.get(%{}, "http://example.tech") == "<html>example.tech says hi</html>"
+    end
+  end
+  
+  def conditionally_mocked(url) do
+    cond do
+      String.contains?(url, ".xyz") -> "<html>Hello from example.xyz</html>"
+      String.contains?(url, ".tech") -> "<html>example.tech says hi</html>"
     end
   end
 end
 ````
-
-If you want to return a different value based on part of the input (i.e., if the url contains a particular string), you can do as follows:
-
-```` elixir
-defmodule MyTest do
-  use ExUnit.Case, async: false
-
-  import Mock
-
-  test "mock functions with multiple returns" do
-    with_mock(Map, [
-      get: fn
-        (%{}, url) -> 
-					cond do
-						String.contains?(url, ".com") -> "<html>Hello from example.com</html>"
-						String.contains?(url, ".org") -> "<html>example.org says hi</html>"
-					end
-      end
-    ]) do
-      assert Map.get(%{}, "http://example.com") == "<html>Hello from example.com</html>"
-      assert Map.get(%{}, "http://example.org") == "<html>example.org says hi</html>"
-    end
-  end
-end
-````
-
-* This is helpful if, for example, you want to mock a method that calls out to different backends based on the input. You can then mock out those various calls based on parts of the input to that function.
 
 ## Mocking functions with different arities
 
