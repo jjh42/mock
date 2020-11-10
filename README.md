@@ -459,7 +459,9 @@ defmodule MyTest do
 end
 ````
 
-## NOT SUPPORTED - Mocking internal function calls
+## NOT SUPPORTED
+
+### Mocking internal function calls
 
 A common issue a lot of developers run into is Mock's lack of support for mocking
 internal functions. Mock will behave as follows:
@@ -521,6 +523,36 @@ Or, like so:
     MyApp.IndirectMod.value()
   end
 ````
+
+### Mocking macros
+
+Currently mocking macros is not supported. For example this will not work because `Logger.error/1` is a macro:
+
+```elixir
+with_mock Logger, [error: fn(_) -> 42 end] do
+   assert Logger.error("msg") == 42
+end
+```
+
+This code will give you this error: `Erlang error: {:undefined_function, {Logger, :error, 1}}`
+
+As a workaround, you may define a wrapper function for the macro you need to invoke:
+
+```elixir
+defmodule MyModule do
+  def log_error(arg) do
+    Logger.error(arg)
+  end
+end
+```
+
+Then in your test you can mock that wrapper function:
+
+```elixir
+with_mock MyModule, [log_error: fn(_) -> 42 end] do
+   assert MyModule.log_error("msg") == 42
+end
+```
 
 ## Tips
 The use of mocking can be somewhat controversial. I personally think that it
