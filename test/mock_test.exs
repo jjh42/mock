@@ -45,7 +45,7 @@ defmodule MockTest do
     end
   end
 
-  test "mock fuctions with different arity" do
+  test "mock functions with different arity" do
     with_mock String,
       [slice: fn(string, _range)      -> string end,
        slice: fn(string, _range, _len) -> string end]
@@ -62,6 +62,21 @@ defmodule MockTest do
       String.reverse(3)
     end
     assert result == 6
+  end
+
+  test "mock returns multiples results in sequence" do
+    with_mock String, [
+      reverse: [in_series([:_], [:a, :b, :c])],
+      slice: [in_series([1, 2], [:x, :y, :z])]
+    ] do
+      assert String.reverse(1) == :a
+      assert String.reverse(1) == :b
+      assert String.reverse(1) == :c
+
+      assert String.slice(1, 2) == :x
+      assert String.slice(1, 2) == :y
+      assert String.slice(1, 2) == :z
+    end
   end
 
   test "called" do

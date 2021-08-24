@@ -18,6 +18,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 	* [*setup_with_mocks* - Configure all tests to have the same mocks](#setup_with_mocks---Configure-all-tests-to-have-the-same-mocks)
 	* [Mocking input dependant output](#Mocking-input-dependant-output)
 	* [Mocking functions with different arities](#Mocking-functions-with-different-arities)
+	* [Mocking repeated calls to the same function with different results](#Mocking-repeated-calls-to-the-same-function)
 	* [*passthrough* - partial mocking of a module](#passthrough---partial-mocking-of-a-module)
 	* [Assert called - assert a specific function was called](#Assert-called---assert-a-specific-function-was-called)
 		* [Assert called - specific value](#Assert-called---specific-value)
@@ -204,7 +205,7 @@ defmodule MyTest do
       assert Map.get(%{}, "http://example.tech") == "<html>example.tech says hi</html>"
     end
   end
-  
+
   def conditionally_mocked(url) do
     cond do
       String.contains?(url, ".xyz") -> "<html>Hello from example.xyz</html>"
@@ -231,6 +232,34 @@ defmodule MyTest do
     do
       assert String.slice("test", 1..3) == "test"
       assert String.slice("test", 1, 3) == "test"
+    end
+  end
+end
+
+````
+
+## Mock repeated calls
+
+You can mock repeated calls to the same function _and_ arguments to return
+different results in a series using the `in_series` call with static values.
+This does not currently support _functions_.
+
+**Note**: This is only useful in rare instances. If you can avoid it by using
+different function arguments, that is the suggested path.
+
+```` elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "mock repeated calls with in_series" do
+    with_mock String,
+      [slice: [in_series(["test", 1..3], ["string1", "string2", "string3"])]]
+    do
+      assert String.slice("test", 1..3) == "string1"
+      assert String.slice("test", 1, 3) == "string2"
+      assert String.slice("test", 1, 3) == "string3"
     end
   end
 end
