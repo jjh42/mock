@@ -16,7 +16,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 	* [*with_mocks* - Mocking multiple modules](#with_mocks---Mocking-multiple-modules)
 	* [*test_with_mock* - with_mock helper](#test_with_mock---with_mock-helper)
 	* [*setup_with_mocks* - Configure all tests to have the same mocks](#setup_with_mocks---Configure-all-tests-to-have-the-same-mocks)
-	* [Mocking input dependant output](#Mocking-input-dependant-output)
+	* [Mocking input dependent output](#Mocking-input-dependent-output)
 	* [Mocking functions with different arities](#Mocking-functions-with-different-arities)
 	* [*passthrough* - partial mocking of a module](#passthrough---partial-mocking-of-a-module)
 	* [Assert called - assert a specific function was called](#Assert-called---assert-a-specific-function-was-called)
@@ -179,7 +179,7 @@ are not using `async: true` in any module where you are testing.
 Also, because of the way mock overrides the module, it must be defined in a
 separate file from the test file.
 
-## Mocking input dependant output
+## Mocking input dependent output
 
 If you have a function that should return different values depending on what the
 input is, you can do as follows:

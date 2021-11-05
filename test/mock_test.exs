@@ -45,7 +45,7 @@ defmodule MockTest do
     end
   end
 
-  test "mock fuctions with different arity" do
+  test "mock functions with different arity" do
     with_mock String,
       [slice: fn(string, _range)      -> string end,
        slice: fn(string, _range, _len) -> string end]

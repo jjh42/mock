@@ -27,7 +27,7 @@ defmodule Mock.Mixfile do
 
   defp description do
     """
-    A mocking libary for the Elixir language.
+    A mocking library for the Elixir language.
 
     We use the Erlang meck library to provide module mocking
     functionality for Elixir. It uses macros in Elixir to expose
