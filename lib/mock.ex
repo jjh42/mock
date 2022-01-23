@@ -366,4 +366,8 @@ defmodule Mock do
     :meck.expect(mock_module, fn_name, value)
     _install_mock(mock_module, tail)
   end
+
+  def in_series(signature, results) do
+    {signature, :meck.seq(results)}
+  end
 end

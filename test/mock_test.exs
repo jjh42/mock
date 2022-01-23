@@ -64,6 +64,21 @@ defmodule MockTest do
     assert result == 6
   end
 
+  test "mock returns multiples results in sequence" do
+    with_mock String, [
+      reverse: [in_series([:_], [:a, :b, :c])],
+      slice: [in_series([1, 2], [:x, :y, :z])]
+    ] do
+      assert String.reverse(1) == :a
+      assert String.reverse(1) == :b
+      assert String.reverse(1) == :c
+
+      assert String.slice(1, 2) == :x
+      assert String.slice(1, 2) == :y
+      assert String.slice(1, 2) == :z
+    end
+  end
+
   test "called" do
     with_mock String,
        [reverse: fn(x) -> 2*x end,
