@@ -244,8 +244,9 @@ You can mock repeated calls to the same function _and_ arguments to return
 different results in a series using the `in_series` call with static values.
 This does not currently support _functions_.
 
-**Note**: This is only useful in rare instances. If you can avoid it by using
-different function arguments, that is the suggested path.
+**Caution**: This is only useful in rare instances where the underlying business
+logic is likely to be stateful. If you can avoid it by using different function
+arguments, or refactor the function to be stateful, consider that approach first.
 
 ```` elixir
 defmodule MyTest do
@@ -258,8 +259,8 @@ defmodule MyTest do
       [slice: [in_series(["test", 1..3], ["string1", "string2", "string3"])]]
     do
       assert String.slice("test", 1..3) == "string1"
-      assert String.slice("test", 1, 3) == "string2"
-      assert String.slice("test", 1, 3) == "string3"
+      assert String.slice("test", 1..3) == "string2"
+      assert String.slice("test", 1..3) == "string3"
     end
   end
 end
