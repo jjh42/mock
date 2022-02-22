@@ -250,7 +250,7 @@ defmodule Mock do
   end
 
   @doc """
-  Helper function to get the hsitory of mock functions executed.
+  Helper function to get the history of mock functions executed.
 
   ## Example
 
