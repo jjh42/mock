@@ -18,7 +18,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 	* [*setup_with_mocks* - Configure all tests to have the same mocks](#setup_with_mocks---Configure-all-tests-to-have-the-same-mocks)
 	* [Mocking input dependent output](#Mocking-input-dependent-output)
 	* [Mocking functions with different arities](#Mocking-functions-with-different-arities)
-	* [Mocking repeated calls to the same function with different results](#Mocking-repeated-calls-to-the-same-function)
+	* [Mocking repeated calls to the same function with different results](#mock-repeated-calls)
 	* [*passthrough* - partial mocking of a module](#passthrough---partial-mocking-of-a-module)
 	* [Assert called - assert a specific function was called](#Assert-called---assert-a-specific-function-was-called)
 		* [Assert called - specific value](#Assert-called---specific-value)
