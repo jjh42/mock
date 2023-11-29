@@ -109,6 +109,15 @@ defmodule MockTest do
     end
   end
 
+  test "assert called with a map" do
+    with_mock(Map, [
+      get: fn (_map, _key) -> "a" end
+    ]) do
+      Map.get(%{a: "1", b: "2"}, :a)
+      assert_called(Map.get(%{a: "1"}, :a))
+    end
+  end
+
   test "assert_called_exactly" do
     with_mock String, [reverse: fn(x) -> 2*x end] do
       String.reverse(2)
