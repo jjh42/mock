@@ -114,7 +114,7 @@ defmodule MockTest do
       get: fn (_map, _key) -> "a" end
     ]) do
       Map.get(%{a: "1", b: "2"}, :a)
-      assert_called(Map.get(%{a: "1"}, :a))
+      refute called(Map.get(%{a: "1"}, :a))
     end
   end
 
