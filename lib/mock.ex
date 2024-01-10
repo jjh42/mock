@@ -221,6 +221,36 @@ defmodule Mock do
   end
 
   @doc """
+    Use inside a `with_mock` block to determine whether a mocked function was called
+    as expected at least x times. If the assertion fails, the number of calls that
+    were received is displayed in the assertion message.
+
+    Pass `:_` as a function argument for wildcard matches.
+
+    ## Example
+
+        assert_called_at_least HTTPotion.get("http://example.com"), 2
+
+        # Matches any invocation
+        assert_called_at_leaset HTTPotion.get(:_), 2
+  """
+  defmacro assert_called_at_least({{:., _, [module, f]}, _, args}, expected_times) do
+    quote do
+      unquoted_module = unquote(module)
+      unquoted_f = unquote(f)
+      unquoted_args = unquote(args)
+      unquoted_expected_times = unquote(expected_times)
+      actual_called_count = :meck.num_calls(unquoted_module, unquoted_f, unquoted_args)
+
+      if actual_called_count < unquoted_expected_times do
+        mfa_str = "#{unquoted_module}.#{unquoted_f}(#{unquoted_args |> Enum.map(&Kernel.inspect/1) |> Enum.join(", ")})"
+        raise ExUnit.AssertionError,
+          message: "Expected #{mfa_str} to be called at least #{unquoted_expected_times} time(s), but it was called (number of calls: #{actual_called_count})"
+      end
+    end
+  end
+
+  @doc """
     Use inside a `with_mock` block to check if
     a mocked function was NOT called. If the assertion fails,
     the number of calls is displayed in the assertion message.
