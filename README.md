@@ -27,6 +27,7 @@ See the full [reference documentation](https://hexdocs.pm/mock/Mock.html).
 		* [Assert call order](#Assert-call-order)
 	* [Assert not called - assert a specific function was not called](#Assert-not-called---assert-a-specific-function-was-not-called)
 	* [Assert called exactly - assert a specific function was called exactly x times](#Assert-called-exactly---assert-a-specific-function-was-called-exactly-x-times)
+	* [Assert called at least - assert a specific function was called at least x times](#Assert-called-at-least---assert-a-specific-function-was-called-at-least-x-times)
 	* [NOT SUPPORTED - Mocking internal function calls](#NOT-SUPPORTED---Mocking-internal-function-calls)
 	* [Tips](#Tips)
 	* [Help](#Help)
@@ -417,6 +418,34 @@ defmodule MyTest do
   end
 end
 ```
+
+## Assert called at least - assert a specific function was called at least x times
+
+`assert_called_at_least` will assert that a mocked function was called at least the expected number of times.
+
+```elixir
+defmodule MyTest do
+  use ExUnit.Case, async: false
+
+  import Mock
+
+  test "test_name" do
+    with_mock HTTPotion, [get: fn(_url) -> "<html></html>" end] do
+      HTTPotion.get("http://example.com")
+      HTTPotion.get("http://example.com")
+      HTTPotion.get("http://example.com")
+
+      # Using Wildcard
+      assert_called_at_least HTTPotion.get(:_), 2
+
+      # Using Specific Value
+      assert_called_at_least HTTPotion.get("http://example.com"), 2
+    end
+  end
+end
+```
+
+
 
 ### Assert call order
 
