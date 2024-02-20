@@ -173,7 +173,9 @@ defmodule Mock do
   defmacro assert_called({{:., _, [module, f]}, _, args}) do
     quote do
       unquoted_module = unquote(module)
-      value = :meck.called(unquoted_module, unquote(f), unquote(args))
+      unquoted_f = unquote(f)
+      unquote_args = unquote(args)
+      value = :meck.called(unquoted_module, unquoted_f, unquote_args)
 
       unless value do
         calls = unquoted_module
@@ -185,7 +187,11 @@ defmodule Mock do
                 |> Enum.join("\n")
 
         raise ExUnit.AssertionError,
-          message: "Expected call but did not receive it. Calls which were received:\n\n#{calls}"
+          message: """
+            Expected call but did not receive it. Calls which were captured:\n\n#{calls}.
+            \n
+            Expected call: #{unquoted_module}.#{unquoted_f}(#{unquote_args |> Enum.map(&Kernel.inspect/1) |> Enum.join(",")})
+          """
       end
     end
   end
