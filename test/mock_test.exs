@@ -202,4 +202,23 @@ defmodule MockTest do
 
     assert String.downcase("A") == "a"
   end
+
+  test_with_mocks "test_with_mocks/3", [
+    {Map, [], [get: fn %{}, "http://example.com" -> "<html></html>" end]},
+    {String, [], [reverse: fn x -> 2 * x end, length: fn _x -> :ok end]}
+  ] do
+    assert Map.get(%{}, "http://example.com") == "<html></html>"
+    assert String.reverse(3) == 6
+    assert String.length(3) == :ok
+  end
+
+  test_with_mocks "test_with_mocks/4", %{foo: foo}, [
+    {Map, [], [get: fn %{}, "http://example.com" -> "<html></html>" end]},
+    {String, [], [reverse: fn x -> 2 * x end, length: fn _x -> :ok end]}
+  ] do
+    assert Map.get(%{}, "http://example.com") == "<html></html>"
+    assert String.reverse(3) == 6
+    assert String.length(3) == :ok
+    assert foo == "bar"
+  end
 end

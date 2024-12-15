@@ -385,6 +385,60 @@ defmodule Mock do
     end
   end
 
+  @doc """
+  Shortcut to avoid multiple blocks when a test requires multiple
+  mocks.
+
+  For full description see `test_with_mocks`.
+
+  ## Example
+
+      test_with_mocks "test_name", [{HTTPotion,[],
+        [get: fn(_url) -> "<html></html>" end]}] do
+        HTTPotion.get("http://example.com")
+        assert called HTTPotion.get("http://example.com")
+      end
+  """
+  defmacro test_with_mocks(test_name, mocks, test_block) do
+    quote do
+      test unquote(test_name) do
+        unquote(__MODULE__).with_mocks(
+          unquote(mocks),
+          unquote(test_block)
+        )
+      end
+    end
+  end
+
+  @doc """
+  Shortcut to avoid multiple blocks when a test requires multiple
+  mocks. Accepts a context argument enabling information to be shared
+  between callbacks and the test.
+
+  For full description see `test_with_mocks`.
+
+  ## Example
+
+      test_with_mocks "test_name", %{foo: foo} [{HTTPotion,[],
+        [get: fn(_url) -> "<html></html>" end]}] do
+        HTTPotion.get("http://example.com")
+        assert called HTTPotion.get("http://example.com")
+        assert foo == "bar"
+      end
+  """
+  defmacro test_with_mocks(test_name, context, mocks, test_block) do
+    quote do
+      test unquote(test_name), unquote(context) do
+        unquote(__MODULE__).with_mocks(
+          unquote(mocks),
+          unquote(test_block)
+        )
+      end
+    end
+  end
+
+  ######################################################
+
   # Helper macro to mock modules. Intended to be called only within this module
   # but not defined as `defmacrop` due to the scope within which it's used.
   defmacro mock_modules(mocks) do
