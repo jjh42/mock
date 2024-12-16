@@ -1,11 +1,11 @@
-Code.require_file "test_helper.exs", __DIR__
+Code.require_file("test_helper.exs", __DIR__)
 
 defmodule MockSetupTest do
   use ExUnit.Case, async: false
   import Mock
 
   setup_with_mocks([
-    {Map, [:passthrough], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
+    {Map, [:passthrough], [get: fn %{}, "http://example.com" -> "<html></html>" end]}
   ]) do
     foo = "bar"
     {:ok, foo: foo}
@@ -20,26 +20,29 @@ defmodule MockSetupTest do
   end
 
   test_with_mock "setup_with_mocks respects test specific override", Map, [:passthrough],
-    [get: fn(%{}, "http://example.com") -> "<html>override</html>" end] do
-
+    get: fn %{}, "http://example.com" -> "<html>override</html>" end do
     assert Map.get(%{}, "http://example.com") == "<html>override</html>"
   end
 
-  test_with_mock "setup_with_mocks with test context respects test specific override", %{foo: "bar"},
-    Map, [], [get: fn(%{}, "http://example.com") -> "<html>override</html>" end] do
-
+  test_with_mock "setup_with_mocks with test context respects test specific override",
+                 %{foo: "bar"},
+                 Map,
+                 [],
+                 get: fn %{}, "http://example.com" -> "<html>override</html>" end do
     assert Map.get(%{}, "http://example.com") == "<html>override</html>"
   end
-
 end
 
 defmodule MockSetupTestWithContext do
   use ExUnit.Case, async: false
   import Mock
 
-  setup_with_mocks([
-    {Map, [:passthrough], [get: fn(%{}, "http://example.com") -> "<html></html>" end]}
-  ], context) do
+  setup_with_mocks(
+    [
+      {Map, [:passthrough], [get: fn %{}, "http://example.com" -> "<html></html>" end]}
+    ],
+    context
+  ) do
     {:ok, test_string: Atom.to_string(context.test)}
   end
 
@@ -51,5 +54,4 @@ defmodule MockSetupTestWithContext do
     assert Map.get(%{}, "http://example.com") == "<html></html>"
     assert test_string == "test setup_with_mocks with setup context and test context"
   end
-
 end

@@ -4,7 +4,8 @@ defmodule Mock.Mixfile do
   @version "0.3.8"
 
   def project do
-    [ app: :mock,
+    [
+      app: :mock,
       name: "Mock",
       version: @version,
       elixir: "~> 1.0",
@@ -13,7 +14,8 @@ defmodule Mock.Mixfile do
       test_coverage: [tool: ExCoveralls],
       docs: [source_ref: "v#{@version}", main: "Mock"],
       preferred_cli_env: [coveralls: :test, "coveralls.detail": :test, "coveralls.post": :test],
-      deps: deps() ]
+      deps: deps()
+    ]
   end
 
   defp deps do
@@ -49,7 +51,7 @@ defmodule Mock.Mixfile do
         "matt.freer",
         "Mikhail S. Pobolovets",
         "parroty",
-        "xieyunzi",
+        "xieyunzi"
       ],
       maintainers: [
         "Daniel Olshansky (olshansky.daniel@gmail.com)",
@@ -58,7 +60,7 @@ defmodule Mock.Mixfile do
       licenses: ["MIT"],
       links: %{
         "GitHub" => "https://github.com/jjh42/mock",
-        "Docs"   => "https://jjh42.github.io/mock"
+        "Docs" => "https://jjh42.github.io/mock"
       }
     ]
   end
